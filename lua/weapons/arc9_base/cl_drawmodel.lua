@@ -289,7 +289,7 @@ end
 
 -- SWEP.AdvancedCamoCache = {}
 
-local maxcamos = GetConVar("arc9_atts_maxcamos")
+-- local maxcamos = GetConVar("arc9_atts_maxcamos") -- was unused
 
 function SWEP:GetAdvancedCamo(att, address)
     if self.AdvancedCamoCache == false then return end -- disable this bitch if no super camo slots
@@ -297,7 +297,10 @@ function SWEP:GetAdvancedCamo(att, address)
     if address then att = address end
     if self.AdvancedCamoCache == nil then self.AdvancedCamoCache = {} end
 
-    if self.AdvancedCamoCache[att] then return self.AdvancedCamoCache[att] end
+    if self.AdvancedCamoCache[att] ~= nil then
+        if self.AdvancedCamoCache[att] == false then return nil end -- a "fix". this fucking cache was completely useless if the weapon had no camos, wonderful
+        return self.AdvancedCamoCache[att]
+    end
 
     local state = 1
 
@@ -335,9 +338,12 @@ function SWEP:GetAdvancedCamo(att, address)
             Factor = camoatt.CustomBlendFactor,
             PhongMult = camoatt.CustomCamoPhongMult,
         }
+    elseif hasadvcamoslots then
+        self.AdvancedCamoCache[att] = false
     end
 
     if !hasadvcamoslots then self.AdvancedCamoCache = false return end -- disable this bitch if no super camo slots
     
+    if self.AdvancedCamoCache[att] == false then return nil end
     return self.AdvancedCamoCache[att]
 end

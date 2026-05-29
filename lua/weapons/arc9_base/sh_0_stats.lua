@@ -294,31 +294,6 @@ function SWEP:RunHook(val, data)
 end
 
 
--- cache_add["Damage"]["Sights"])
-local function stringcache(prefix, suffix)
-    return setmetatable({}, {
-        __index = function(t, val)
-            local subTbl = setmetatable({}, {
-                __index = function(t2, condition)
-                    local str = (prefix or "") .. val .. (suffix or "") .. condition
-                    t2[condition or "nil"] = str
-                    return str
-                end
-            })
-            t[val] = subTbl
-            return subTbl
-        end
-    })
-end
-
-local cache_cond = stringcache("", "")
-local cache_priority = stringcache("", "")
-local cache_override = stringcache("", "Override")
-local cache_add = stringcache("", "Add")
-local cache_mult = stringcache("", "Mult")
-local cache_hook = stringcache("", "Hook")
-
-
 local function getValue(self, val, base, condition, amount, donotcache) -- preventing .__index overhead i guess
     condition = condition or ""
     amount = amount or 1
@@ -331,18 +306,18 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
         stat = self[val]
     end
 
-    local valContCondition = cache_cond[val][condition]
+    local valContCondition = val .. condition
     if self.HasNoAffectors[valContCondition] then return stat end
 
     local unaffected = true
     
-    local baseContValContCondition = base and cache_cond[tostring(base)][valContCondition] or valContCondition
+    local baseContValContCondition = base and tostring(base) .. valContCondition or valContCondition
 
     if not self.DynamicConditions[condition] and not donotcache then
         local cache = self.StatCache[baseContValContCondition]
     
         if cache ~= nil then
-            local hookstat = runHook(self, cache_hook[val][condition], cache) -- whats the point of this though
+            local hookstat = runHook(self, val .. "Hook" .. condition, cache) -- whats the point of this though
             -- its not being cached so you want it to be dynamic
             -- but its not gonna be dynamic since you have cache inside GetProcessedValue too, which lasts like 60 seconds or whatever, i forgor
             -- + affectors are getting cached too
@@ -372,7 +347,7 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
     if not self.ExcludeFromRawStats[val] then -- whatever tf this is
         for i = 1, affectorsCount do
             local elem = allAffectors[i]
-            local att_priority = elem[cache_priority[val]] or 1
+            local att_priority = elem[valContCondition .. "_Priority"] or 1
             
             local mod = elem[valContCondition]
             if mod == nil then continue end
@@ -392,9 +367,9 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
 
     for i = 1, affectorsCount do -- overriding
         local elem = allAffectors[i]
-        local keyName = cache_override[val][condition]
+        local keyName = val .. "Override" .. condition
         local mod = elem[keyName]
-        local att_priority = elem[cache_priority[keyName]] or 1
+        local att_priority = elem[keyName .. "_Priority"] or 1
         
         -- if type(mod) == type(stat) then
         if mod ~= nil then
@@ -411,7 +386,7 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
     if type(stat) == "number" then
         for i = 1, affectorsCount do -- addition
             local elem = allAffectors[i]
-            local mod = elem[cache_add[val][condition]]
+            local mod = elem[val .. "Add" .. condition]
             if type(mod) == type(stat) then
                 stat = stat + mod * amount
             
@@ -423,7 +398,7 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
 
         for i = 1, affectorsCount do -- multiplication
             local elem = allAffectors[i]
-            local mod = elem[cache_mult[val][condition]]
+            local mod = elem[val .. "Mult" .. condition]
             if type(mod) == type(stat) then
                 stat = stat * (amount == 1 and mod or (mod ^ amount))
 
@@ -436,7 +411,7 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
 
     if type(stat) == 'table' then stat.BaseClass = nil end -- ???
 
-    local hookstat, any = runHook(self, cache_hook[val][condition], stat) -- wtf is "any"
+    local hookstat, any = runHook(self, val .. "Hook" .. condition, stat) -- wtf is "any"
     if hookstat ~= nil then stat = hookstat end
     if any then unaffected = false end
     local ughhh = not self.DynamicConditions[condition] and not donotcache

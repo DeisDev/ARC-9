@@ -134,15 +134,17 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
                 if model.charmparent then
                     continue
                 else
-                    if hidebones[slottbl.Bone or -1] then
+                    if !isnpc and hidebones[slottbl.Bone or -1] then
                         model.hidden = true
                         continue
                     end
 
                     if model.Duplicate then
-                        local duplitbl = (slottbl.DuplicateModels or {})[model.Duplicate]
-
-                        if hidebones[(duplitbl or {}).Bone or -1] then
+                        local dupModels = slottbl.DuplicateModels
+                        local duplitbl = dupModels and dupModels[model.Duplicate]
+                        local dupBone = duplitbl and duplitbl.Bone or -1
+                        
+                        if !isnpc and hidebones[dupBone] then
                             model.hidden = true
                             continue
                         end
@@ -172,11 +174,9 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
                                 local coffset = atttbl.CharmOffset or v0
                                 local cangle = atttbl.CharmAngle or a0
 
-                                bpos = bpos + bang:Forward() * coffset.y
-                                bpos = bpos + bang:Up() * coffset.z
-                                bpos = bpos + bang:Right() * coffset.x
-
                                 local up, right, forward = bang:Up(), bang:Right(), bang:Forward()
+
+                                bpos = bpos + forward * coffset.y + up * coffset.z + right * coffset.x
 
                                 bang:RotateAroundAxis(up, cangle.p)
                                 bang:RotateAroundAxis(right, cangle.y)

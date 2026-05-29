@@ -45,6 +45,14 @@ local quickmodifiers = {
     ["HeadshotDamage"] = GetConVar("arc9_mod_headshotdamage"),
     ["MalfunctionMeanShotsToFail"] = GetConVar("arc9_mod_malfunction")
 }
+local quickmodifiers_values = {}
+
+for k, cv in pairs(quickmodifiers) do
+    quickmodifiers_values[k] = cv:GetFloat()
+    cvars.AddChangeCallback(cv:GetName(), function(_, _, newval)
+        quickmodifiers_values[k] = tonumber(newval) or 1
+    end, "arc9_qmods_" .. k)
+end
 
 local singleplayer = game.SinglePlayer()
 local ARC9HeatCapacityGPVOverflow = false
@@ -145,7 +153,8 @@ do
     getAllAffectors = function(self)
         if self.AffectorsCache then return self.AffectorsCache end
 
-        local aff = {table.Copy(self:GetTable())}
+        -- local aff = {table.Copy(self:GetTable())}
+        local aff = {self:GetTable()}
 
         local affLength = 1
 
@@ -301,7 +310,8 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
     if self.HasNoAffectors[valContCondition] then return stat end
 
     local unaffected = true
-    local baseContValContCondition = tostring(base) .. valContCondition
+    
+    local baseContValContCondition = base and tostring(base) .. valContCondition or valContCondition
 
     if not self.DynamicConditions[condition] and not donotcache then
         local cache = self.StatCache[baseContValContCondition]
@@ -315,7 +325,7 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
             if hookstat ~= nil then cache = hookstat end
 
             if quickmodifiers[val] and type(cache) == "number" then
-                local convarvalue = quickmodifiers[val]:GetFloat()
+                local convarvalue = quickmodifiers_values[val]
 
                 if val == "MalfunctionMeanShotsToFail" then -- dont kill me for this pls
                     cache = cache / math.max(0.00000001, convarvalue)
@@ -390,7 +400,7 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
             local elem = allAffectors[i]
             local mod = elem[val .. "Mult" .. condition]
             if type(mod) == type(stat) then
-                stat = stat * (amount == 1 and mod or math.pow(mod, amount))
+                stat = stat * (amount == 1 and mod or (mod ^ amount))
 
                 unaffected = false
             -- else
@@ -443,8 +453,8 @@ do
         if swepDt.Jammed and val == "Malfunction" then return true
         elseif swepDt.HeatLockout and val == "Overheat" then return true
         end
-
-        local processedValueName = val .. tostring(base)
+        
+        local processedValueName = base and val .. tostring(base) or val
         local ticks
 
         if isstatic and not self.DynamicConditions[val] then

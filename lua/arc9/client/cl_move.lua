@@ -1,6 +1,7 @@
 -- local arc9_lean_direction = nil
 
 local arc9_autoreload = GetConVar("arc9_autoreload")
+local arc9_cruelty_reload = GetConVar("arc9_cruelty_reload")
 -- local arc9_autolean = GetConVar("arc9_autolean")
 
 ARC9.ReloadAmount = 0
@@ -60,7 +61,7 @@ hook.Add("CreateMove", "ARC9_CreateMove", function(cmd)
         ARC9.DeferFakeToggleAtts = false
     end
 
-    if GetConVar("arc9_cruelty_reload"):GetBool() then
+    if arc9_cruelty_reload:GetBool() then
         local buttons = cmd:GetButtons()
 
         local shouldreload = false

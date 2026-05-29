@@ -129,7 +129,7 @@ function SWEP:GetAttachmentPos(slottbl, wm, idle, nomodeloffset, custompos, cust
         offset_pos = offset_pos * (self.WorldModelOffset.Scale or 1)
     end
 
-    local apos, aang = llLocalToWorld(Vector(offset_pos[1], -offset_pos[2], offset_pos[3]), a0, bpos, bang)
+    local apos, aang = llLocalToWorld(Vector(offset_pos[1], -offset_pos[2], offset_pos[3]), bang, bpos, bang)
 
     if !nomodeloffset then
         offset_ang = offset_ang + (atttbl.ModelAngleOffset or a0)
@@ -151,7 +151,8 @@ function SWEP:GetAttachmentPos(slottbl, wm, idle, nomodeloffset, custompos, cust
             moffset = moffset * (self.WorldModelOffset.Scale or 1)
         end
 
-        apos = apos + forward * moffset.x + right * moffset.y + up * moffset.z
+        -- apos = apos + forward * moffset.x + right * moffset.y + up * moffset.z
+        apos = apos + aang:Forward() * moffset.x + aang:Right() * moffset.y + aang:Up() * moffset.z
     end
 
     if idle then SafeRemoveEntity(parentmdl) end
@@ -170,7 +171,7 @@ function SWEP:GetAttachmentPos(slottbl, wm, idle, nomodeloffset, custompos, cust
 
     if slottbl.Address and !cust then -- att pos cache
         local ypos, yang = wwWorldToLocal(apos, aang, bpos, bang)
-        self.AttPosCache[slottbl.Address] = {ypos, yang, icon_offset, CurTime() + 5}
+        self.AttPosCache[slottbl.Address] = {ypos, yang, icon_offset, CurTime() + 55}
     end
 
     return apos, aang, icon_offset

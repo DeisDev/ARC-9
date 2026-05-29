@@ -130,7 +130,7 @@ function ARC9.StartCommand(ply, cmd)
     if ply:IsBot() then timescalefactor = 1 end -- ping is infinite for them lol
 
     -- Aim assist imported from ArcCW
-    if CLIENT and IsValid(wpn) then
+    if CLIENT and IsValid(wpn) and !wpn:GetProcessedValue("NoAimAssist", true) and arc9_aimassist:GetBool() and ply:GetInfoNum("arc9_aimassist_cl", 0) == 1 and !wpn:GetCustomize() then
         local cone = arc9_aimassist_cone:GetFloat()
         -- local dist = arc9_aimassist_distance:GetFloat() * (wpn:GetProcessedValue("AARangeMult") or 1)
         local dist = wpn:GetProcessedValue("AimAssistRange", true) or math.min(wpn.RangeMax * 0.95, 4000) -- 4000hu is somewhat about 100m
@@ -177,18 +177,15 @@ function ARC9.StartCommand(ply, cmd)
 
         -- Aim towards target
         tgt = ply.ARC9_AATarget
-        if arc9_aimassist:GetBool() and ply:GetInfoNum("arc9_aimassist_cl", 0) == 1 then
-            if IsValid(tgt) and !wpn:GetCustomize() then
-                if !wpn:GetProcessedValue("NoAimAssist", true) then
-                    local ang = cmd:GetViewAngles()
-                    local pos = tgt_pos(tgt, head)
-                    local tgt_ang = (pos - eyepos):Angle() - (wpn:GetFreeSwayAngles() or angle_zero) - (wpn:GetFreeAimOffset() or angle_zero)
-                    local ang_diff = (pos - eyepos):Cross(eyeangfwd):Length()
-                    if ang_diff > 0.1 then
-                        ang = LerpAngle(math.Clamp(inte / ang_diff, 0, 0.1), ang, tgt_ang)
-                        cmd:SetViewAngles(ang)
-                    end
-                end
+
+        if IsValid(tgt) and !wpn:GetCustomize() then
+            local ang = cmd:GetViewAngles()
+            local pos = tgt_pos(tgt, head)
+            local tgt_ang = (pos - eyepos):Angle() - (wpn:GetFreeSwayAngles() or angle_zero) - (wpn:GetFreeAimOffset() or angle_zero)
+            local ang_diff = (pos - eyepos):Cross(eyeangfwd):Length()
+            if ang_diff > 0.1 then
+                ang = LerpAngle(math.Clamp(inte / ang_diff, 0, 0.1), ang, tgt_ang)
+                cmd:SetViewAngles(ang)
             end
         end
     end

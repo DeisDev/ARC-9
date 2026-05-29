@@ -150,14 +150,19 @@ function SWEP:GetMuzzleDevice(wm, n)
 end
 
 function SWEP:DrawEjectedShells()
-    local newshells = {}
+    local shells = self.EjectedShells
+    local num = 1
 
-    for i, k in pairs(self.EjectedShells) do
+    for i = 1, #shells do
+        local k = shells[i]
         if !k:IsValid() then continue end
 
         k:DrawModel()
-        table.insert(newshells, k)
+        shells[num] = k
+        num = num + 1
     end
 
-    self.EjectedShells = newshells
+    for i = num, #shells do
+        shells[i] = nil
+    end
 end

@@ -157,7 +157,7 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
                     model:SetRenderAngles(aang)
                     model:SetupBones()
 
-                    if model.charmmdl then
+                    if model.charmmdl and lod < 1 and !inrt then
                         local bpos, bang
 
                         local bonename = atttbl.CharmBone

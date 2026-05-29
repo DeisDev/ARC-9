@@ -2,6 +2,7 @@ local lodcvar = GetConVar("arc9_lod_distance")
 local drawprojlights = GetConVar("arc9_drawprojectedlights")
 
 local v0, a0 = Vector(0, 0, 0), Angle(0, 0, 0)
+local emptytab = {}
 local swepGetProcessedValue = SWEP.GetProcessedValue
 local renderRenderFlashlights = render.RenderFlashlights
 
@@ -59,7 +60,8 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
     local lod = self:ShouldLOD()
     local isnpc = owner:IsNPC() or lod > 0
     if !wm and isnpc then return end
-    if wm and ARC9.RTScopeRender then return end
+    local inrt = ARC9.RTScopeRender
+    if wm and inrt then return end
     if custompos then wm = true end
     if !swepGetProcessedValue then swepGetProcessedValue = self.GetProcessedValue end
 
@@ -108,7 +110,7 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
     if lod < 2 then
         local onground = wm and !validowner
     
-        local hidebones = isnpc and {} or self:GetHiddenBones(wm)
+        local hidebones = isnpc and emptytab or self:GetHiddenBones(wm)
 
         local customCamoTexture = swepGetProcessedValue(self, "CustomCamoTexture", true)
         local customCamoScale, customBlendFactor
@@ -120,8 +122,8 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
 
         local activesightadress = self:GetActiveSightSlotTable().Address
         local getpos = self:GetPos()
-        local ARC9RTScopeRender = ARC9.RTScopeRender
-        local scopecondition = !ARC9.PresetCam and !ARC9.RTScopeRender and !ARC9.OverDraw
+        local presetcam = ARC9.PresetCam
+        local scopecondition = !presetcam and !inrt and !ARC9.OverDraw
 
         for _, model in ipairs(mdl or {}) do
             if model.IsAnimationProxy then continue end
@@ -136,7 +138,7 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
             if !onground or model.OptimizPrevWMPos != getpos then -- mega optimiz
                 if onground then model.OptimizPrevWMPos = getpos else model.OptimizPrevWMPos = nil end
 
-                if ARC9RTScopeRender and atttbl.RTScope then continue end -- dont draw scope model while drawing vm from scope position
+                if inrt and atttbl.RTScope then continue end -- dont draw scope model while drawing vm from scope position
                 
                 model.hidden = false
 
@@ -200,14 +202,8 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
                     end
                 end
 
-                -- if !wm and atttbl.HoloSight then
-                --     self:DoHolosight(model, atttbl)
-                -- end
-
                 if scopecondition then
-                    if !wm and atttbl.RTScope or self.RTScope then
-                        if !ARC9_ENABLE_NEWSCOPES_MEOW then self:DoRTScope(model, atttbl, slottbl.Address == activesightadress) end
-
+                    if (!wm and atttbl.RTScope) or self.RTScope then
                         if slottbl.Address == activesightadress then
                             self.RTScopeModel = model
                             if self.RTScope then atttbl.RTScopeNew_DisableShaderEyeOffset = true end
@@ -224,9 +220,7 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
             model.CustomCamoScale = customCamoScale
             model.CustomBlendFactor = customBlendFactor
 
-
-            if !model.NoDraw and !(model.istranslucent and !ARC9.PresetCam and !onground and !isnpc) then
-                -- if !wm then model:SetRenderOrigin(self.ViewModelPos or (IsValid(self:GetVM()) and self:GetVM():GetPos() or self:GetPos())) end
+            if !model.NoDraw and (!model.istranslucent or presetcam or onground or isnpc) then
                 model:DrawModel()
                 
                 if !isDepthPass and (drawprojlights:GetBool() or rttenabled == false) then

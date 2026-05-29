@@ -103,10 +103,10 @@ function SWEP:GetAttachmentPos(slottbl, wm, idle, nomodeloffset, custompos, cust
     local cust = self:GetCustomize()
     local possiblecache = self.AttPosCache[slottbl.Address] -- att pos cache
     if !cust and possiblecache then
-        if (possiblecache[4] or 0) > CurTime() then
+        -- if (possiblecache[4] or 0) > CurTime() then
             local qpos, qang = llLocalToWorld(possiblecache[1], possiblecache[2], bpos, bang)
             return qpos, qang, possiblecache[3]
-        end
+        -- end
     end
 
     if slottbl.OriginalAddress then
@@ -171,7 +171,7 @@ function SWEP:GetAttachmentPos(slottbl, wm, idle, nomodeloffset, custompos, cust
 
     if slottbl.Address and !cust then -- att pos cache
         local ypos, yang = wwWorldToLocal(apos, aang, bpos, bang)
-        self.AttPosCache[slottbl.Address] = {ypos, yang, icon_offset, CurTime() + 55}
+        self.AttPosCache[slottbl.Address] = { ypos, yang, icon_offset } -- , CurTime() + 55}
     end
 
     return apos, aang, icon_offset

@@ -129,13 +129,16 @@ function SWEP:PostModify(toggleonly)
 
     if CLIENT then
         -- self:PruneAttachments()
-        self:SendWeapon()
-        self:KillModel()
-        self:SetupModel(true)
-        self:SetupModel(false)
-        if !toggleonly then
+        if !toggleonly then -- bruh
+            self:SendWeapon()
+            self:KillModel()
+            self:SetupModel(true)
+            self:SetupModel(false)
             self:SavePreset()
+        else
+            self:CreateFlashlights()
         end
+        
         self:BuildMultiSight()
         self.InvalidateSelectIcon = true
     else

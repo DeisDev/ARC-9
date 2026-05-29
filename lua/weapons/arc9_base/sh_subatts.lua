@@ -42,11 +42,16 @@ function SWEP:AttTreeToList(tree)
 end
 
 function SWEP:GetSubSlotList()
+    if (self.CacheLastInvalidation + 3) < CurTime() and self.GetSubSlotListCache then return self.GetSubSlotListCache end
+
+    if !self.Attachments then return {} end
     local atts = {}
 
     for _, i in ipairs(self.Attachments or {}) do
         table.Add(atts, self:AttTreeToList(i))
     end
+
+    self.GetSubSlotListCache = atts
 
     return atts
 end

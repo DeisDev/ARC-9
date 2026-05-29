@@ -104,6 +104,9 @@ function SWEP:DoInvalidateCache() -- todo: run this while supermods are being ap
     self.HasNoAffectors = {}
     self.ListOfToggleableAttSlots = nil
 
+    self.GetSubSlotListCache = nil
+    self.CacheLastInvalidation = CurTime()
+
     self:SetBaseSettings()
 end
 

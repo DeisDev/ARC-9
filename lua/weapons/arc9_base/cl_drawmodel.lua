@@ -3,6 +3,7 @@ local drawprojlights = GetConVar("arc9_drawprojectedlights")
 
 local v0, a0 = Vector(0, 0, 0), Angle(0, 0, 0)
 local swepGetProcessedValue = SWEP.GetProcessedValue
+local renderRenderFlashlights = render.RenderFlashlights
 
 local function getscopebound(self, scopeent)
     local vm = self:GetVM()
@@ -227,7 +228,12 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
             if !model.NoDraw and !(model.istranslucent and !ARC9.PresetCam and !onground and !isnpc) then
                 -- if !wm then model:SetRenderOrigin(self.ViewModelPos or (IsValid(self:GetVM()) and self:GetVM():GetPos() or self:GetPos())) end
                 model:DrawModel()
-                if !isDepthPass and (drawprojlights:GetBool() or rttenabled == false) then render.RenderFlashlights(function() model:DrawModel() end) end
+                
+                if !isDepthPass and (drawprojlights:GetBool() or rttenabled == false) then
+                    if !model.DrawModelFlashlightFunc then model.DrawModelFlashlightFunc = function() model:DrawModel() end end -- caching to prevent gc spike
+
+                    renderRenderFlashlights(model.DrawModelFlashlightFunc)
+                end
             end
 
             if self.RTScopeModel == model and !model.RTScopeLength then model.RTScopeLength = getscopebound(self, model) end

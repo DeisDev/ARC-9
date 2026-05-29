@@ -65,24 +65,18 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
     if custompos then wm = true end
     if !swepGetProcessedValue then swepGetProcessedValue = self.GetProcessedValue end
 
-    local mdl = self.VModel
+    local mdl = wm and (custompos and self.CModel or self.WModel) or self.VModel
 
     if wm then
-        if custompos then
-            mdl = self.CModel
-        else
-            mdl = self.WModel
-
-            if !isDepthPass and lod == 0 and mdl and mdl[1]:IsValid() then
+        if !custompos then
+            if !isDepthPass and lod == 0 and mdl and IsValid(mdl[1]) then
                 mdl[1]:SetMaterial(swepGetProcessedValue(self, "Material", true))
                 
                 if !mdl[1].MaterialAmount then mdl[1].MaterialAmount = table.Count(mdl[1]:GetMaterials() or {}) end
 
                 for ind = 0, mdl[1].MaterialAmount do
-                    local val = swepGetProcessedValue(self, "SubMaterial" .. ind, true)
-                    if val then
-                        mdl[1]:SetSubMaterial(ind, val)
-                    end
+                    local val = swepGetProcessedValue(self, "SubMaterial " .. ind, true)
+                    if val then mdl[1]:SetSubMaterial(ind, val) end
                 end
             end
         end
@@ -96,16 +90,10 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
     if !mdl then
         self:KillModel()
         self:SetupModel(wm, lod, !!custompos)
-
-        mdl = self.VModel
-
-        if wm then
-            mdl = self.WModel
-            if custompos then
-                mdl = self.CModel
-            end
-        end
+        mdl = wm and (custompos and self.CModel or self.WModel) or self.VModel
     end
+
+    if !mdl then return end
 
     if lod < 2 then
         local onground = wm and !validowner
@@ -125,7 +113,8 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
         local presetcam = ARC9.PresetCam
         local scopecondition = !presetcam and !inrt and !ARC9.OverDraw
 
-        for _, model in ipairs(mdl or {}) do
+        for i = 1, #mdl do
+            local model = mdl[i]
             if model.IsAnimationProxy then continue end
             if !IsValid(model) then self:KillModel() return end
 

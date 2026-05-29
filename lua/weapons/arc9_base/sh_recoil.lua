@@ -53,6 +53,7 @@ local recoilshake = GetConVar("arc9_recoilshake")
 
 function SWEP:ApplyRecoil()
     local rec = self:GetRecoilAmount()
+    local oldrec = rec
 
     local rps = swepGetProcessedValue(self, "RecoilPerShot")
 
@@ -61,7 +62,7 @@ function SWEP:ApplyRecoil()
     local recoilup = 0
     local recoilside = 0
 
-    local shot = math.floor(self:GetRecoilAmount()) + 1
+    local shot = math.floor(oldrec) + 1
 
     local dir = self:GetRecoilPatternDirection(shot)
 
@@ -168,27 +169,14 @@ do
         return Angle(vec[1], vec[2], vec[3])
     end
 
-    local weirdfix = true
-
     function SWEP:ThinkVisualRecoil()
-        --if SERVER and !self.PhysicalVisualRecoil then return end
-
-        local MAGIC1 = 210
-        local MAGIC2 = 210
-
         local ft = CLIENT and RealFrameTime() or FrameTime()
         if ft == 0 then return end -- game is paused
 
-        if weirdfix then
-            -- MAGIC1 = 210 / (engine.TickInterval() / 0.015)
-            -- MAGIC2 = 210 / (engine.TickInterval() / 0.015)
-            MAGIC1 = math.min(MAGIC1, 210 / (ft / 0.015))
-            MAGIC2 = math.min(MAGIC2, 210 / (ft / 0.015))
-        end
+        local MAGIC1 = math.min(210, 210 / (ft / 0.015))
         
         if CLIENT and ft > 0.09 then -- super lag detected, clamping recoil
             MAGIC1 = 0.1
-            MAGIC2 = 0.1
         end
         
         local springconstant = swepGetProcessedValue(self, "VisualRecoilDampingConst", true) or 120
@@ -232,9 +220,9 @@ do
         vav = vav + ((vac + new_vac) * (ft * 0.5))
 
         for i = 1, 3 do
-            vaa[i] = math_Clamp(vaa[i], -MAGIC2, MAGIC2)
-            vav[i] = math_Clamp(vav[i], -MAGIC2, MAGIC2)
-            new_vac[i] = math_Clamp(new_vac[i], -MAGIC2, MAGIC2)
+            vaa[i] = math_Clamp(vaa[i], -MAGIC1, MAGIC1)
+            vav[i] = math_Clamp(vav[i], -MAGIC1, MAGIC1)
+            new_vac[i] = math_Clamp(new_vac[i], -MAGIC1, MAGIC1)
         end
 
         self:SetVisualRecoilAng(vaa)
@@ -242,11 +230,9 @@ do
         self:SetVisualRecoilVel(vav)
 
 
-
-
         -- SUBTLE RECOIL MOVEMENT
         if CLIENT and self.SubtleVisualRecoil and (self:GetLastRecoilTime() + 0.75 > CurTime()) then
-            ft = math.Clamp(ft, 0.0001, 0.02)
+            ft = math.Clamp(ft, 0.005, 0.02)
             local springconstant2 = 150 * (self.SubtleVisualRecoilSpeed or 1)
             local springmagnitude2 = 0.3
             local springdamping2 = 2.8
@@ -263,10 +249,6 @@ do
                     springdamping2 = springdamping2 * 10
                 end
             end
-    
-            -- if self.VisualRecoilThinkFunc then
-            --     springconstant2, springmagnitude2, springdamping2 = self.VisualRecoilThinkFunc(springconstant2, springmagnitude2, springdamping2, self:GetRecoilAmount())
-            -- end
     
             local vpa2 = self.SubtleVisualRecoilPos
             local vpv2 = self.SubtleVisualRecoilPosVel
@@ -303,9 +285,9 @@ do
             vaa2.x = vaa2.x * 0.25
 
             for i = 1, 3 do
-                vaa2[i] = math_Clamp(vaa2[i], -MAGIC2, MAGIC2)
-                vav2[i] = math_Clamp(vav2[i], -MAGIC2, MAGIC2)
-                new_vac2[i] = math_Clamp(new_vac2[i], -MAGIC2, MAGIC2)
+                vaa2[i] = math_Clamp(vaa2[i], -MAGIC1, MAGIC1)
+                vav2[i] = math_Clamp(vav2[i], -MAGIC1, MAGIC1)
+                new_vac2[i] = math_Clamp(new_vac2[i], -MAGIC1, MAGIC1)
             end
             
             self.SubtleVisualRecoilAng = vaa2

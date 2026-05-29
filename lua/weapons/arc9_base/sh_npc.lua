@@ -108,7 +108,7 @@ function SWEP:NPC_Initialize()
     self:SetClip1(self.ClipSize > 0 and math.max(1, self.Primary.DefaultClip) or self.Primary.DefaultClip)
 
     timer.Simple(0.1, function()
-        if IsValid(self) and !self.WeaponWasGiven and arc9_npc_atts:GetBool() then
+        if IsValid(self) and arc9_npc_atts:GetBool() then
             self:QueueForRandomize()
         end
     end)
@@ -121,7 +121,7 @@ function SWEP:NoOwner_Initialize()
     if CLIENT then return end
 
     timer.Simple(0.02, function()
-        if IsValid(self) and !self.WeaponWasGiven and arc9_ground_atts:GetBool() then
+        if IsValid(self) and arc9_ground_atts:GetBool() then
             self:QueueForRandomize()
         end
     end)

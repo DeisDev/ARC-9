@@ -115,10 +115,11 @@ function SWEP:ExitSprint()
 end
 
 function SWEP:ThinkSprint()
+    local issprinting = self:GetIsSprinting()
 
-    local sprinting = self:GetSafe() or self:GetIsSprinting()
+    local sprinting = self:GetSafe() or issprinting
 
-    if self:GetIsSprinting() and self:GetProcessedValue("SprintCancelsReload", true) then
+    if issprinting and self:GetProcessedValue("SprintCancelsReload", true) then
 		self:CancelReload()
     end
 

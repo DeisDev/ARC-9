@@ -16,18 +16,12 @@ function SWEP:GetAttachmentPos(slottbl, wm, idle, nomodeloffset, custompos, cust
     if wm then
         if slottbl.WMBase then
             parentmdl = self:GetOwner()
-
-            if !IsValid(parentmdl) then
-                parentmdl = self
-            end
-
-            if custompos then
-                parentmdl = nil
-            end
+            if !IsValid(parentmdl) then parentmdl = self end
+            if custompos then parentmdl = nil end
         else
             if custompos then
                 parentmdl = self.CModel[1]
-                parentmdl:SetupBones()
+                if parentmdl then parentmdl:SetupBones() end
             else
                 parentmdl = self.WModel[1]
             end
@@ -60,10 +54,6 @@ function SWEP:GetAttachmentPos(slottbl, wm, idle, nomodeloffset, custompos, cust
 
     if slottbl.WMBase then
         bone = (self:ShouldTPIK() and self.TPIKParentToSpine4) and "ValveBiped.Bip01_Spine4" or "ValveBiped.Bip01_R_Hand"
-
-        -- if self:ShouldTPIK() then
-        --     bone = "ValveBiped.Bip01_Head1"
-        -- end
     end
 
     if slottbl.Installed then
@@ -77,33 +67,34 @@ function SWEP:GetAttachmentPos(slottbl, wm, idle, nomodeloffset, custompos, cust
     local bpos, bang = v0, a0
 
     if dupli > 0 then
-        offset_pos = slottbl.DuplicateModels[dupli].Pos or offset_pos
-        offset_ang = slottbl.DuplicateModels[dupli].Ang or offset_ang
-
-        bone = slottbl.DuplicateModels[dupli].Bone or bone
+        local dupli_tbl = slottbl.DuplicateModels[dupli]
+        if dupli_tbl then
+            offset_pos = dupli_tbl.Pos or offset_pos
+            offset_ang = dupli_tbl.Ang or offset_ang
+            bone = dupli_tbl.Bone or bone
+        end
     end
 
-    local selfpos, selfang = self:GetPos(), self:GetAngles()
-
     if parentmdl and bone then
-            local boneindex = parentmdl:LookupBone(bone)
+        local boneindex = parentmdl:LookupBone(bone)
 
-            if !boneindex then return v0, a0, v0 end
+        if !boneindex then return v0, a0, v0 end
 
-            if parentmdl == self:GetOwner() then
-                parentmdl:SetupBones()
-                parentmdl:InvalidateBoneCache()
-            end
-            local bonemat = parentmdl:GetBoneMatrix(boneindex)
-            if bonemat then
-                bpos = bonemat:GetTranslation()
-                bang = bonemat:GetAngles()
-            end
+        if parentmdl == self:GetOwner() then
+            parentmdl:SetupBones()
+            parentmdl:InvalidateBoneCache()
+        end
 
-            if !bang or !bpos then
-                bang = selfang
-                bpos = selfpos
-            end
+        local bonemat = parentmdl:GetBoneMatrix(boneindex)
+        if bonemat then
+            bpos = bonemat:GetTranslation()
+            bang = bonemat:GetAngles()
+        end
+
+        if !bang or !bpos then
+            bang = self:GetAngles()
+            bpos = self:GetPos()
+        end
     elseif custompos then
         bpos = custompos
         bang = customang or a0
@@ -122,12 +113,14 @@ function SWEP:GetAttachmentPos(slottbl, wm, idle, nomodeloffset, custompos, cust
         local eles = self:GetAttachmentElements()
 
         for _, ele in ipairs(eles) do
-            local mods = ele.AttPosMods or {}
-
-            if mods[slottbl.OriginalAddress] then
-                offset_pos = mods[slottbl.OriginalAddress].Pos or offset_pos
-                offset_ang = mods[slottbl.OriginalAddress].Ang or offset_ang
-                icon_offset = mods[slottbl.OriginalAddress].Icon_Offset or icon_offset
+            local mods = ele.AttPosMods
+            if mods then
+                local mod_data = mods[slottbl.OriginalAddress]
+                if mod_data then
+                    offset_pos = mod_data.Pos or offset_pos
+                    offset_ang = mod_data.Ang or offset_ang
+                    icon_offset = mod_data.Icon_Offset or icon_offset
+                end
             end
         end
     end
@@ -136,16 +129,7 @@ function SWEP:GetAttachmentPos(slottbl, wm, idle, nomodeloffset, custompos, cust
         offset_pos = offset_pos * (self.WorldModelOffset.Scale or 1)
     end
 
-    local apos, aang
-
-    aang = Angle()
-    aang:Set(bang)
-
-    local forward = aang:Forward()
-    local right = aang:Right()
-    local up = aang:Up()
-
-    apos = bpos + forward * offset_pos.x + right * offset_pos.y + up * offset_pos.z
+    local apos, aang = llLocalToWorld(Vector(offset_pos[1], -offset_pos[2], offset_pos[3]), a0, bpos, bang)
 
     if !nomodeloffset then
         offset_ang = offset_ang + (atttbl.ModelAngleOffset or a0)
@@ -153,33 +137,31 @@ function SWEP:GetAttachmentPos(slottbl, wm, idle, nomodeloffset, custompos, cust
 
     aang:Set(bang)
 
-    local forward2 = aang:Forward()
-    local right2 = aang:Right()
-    local up2 = aang:Up()
+    local forward = aang:Forward()
+    local right = aang:Right()
+    local up = aang:Up()
 
-    aang:RotateAroundAxis(forward2, offset_ang.r)
-    aang:RotateAroundAxis(right2, offset_ang.p)
-    aang:RotateAroundAxis(up2, offset_ang.y)
+    aang:RotateAroundAxis(forward, offset_ang.r)
+    aang:RotateAroundAxis(right, offset_ang.p)
+    aang:RotateAroundAxis(up, offset_ang.y)
 
-    if !nomodeloffset then
-        local moffset = (atttbl.ModelOffset or v0) * (slottbl.Scale or 1)
+    if !nomodeloffset and atttbl.ModelOffset then
+        local moffset = atttbl.ModelOffset * (slottbl.Scale or 1)
         if wm then
             moffset = moffset * (self.WorldModelOffset.Scale or 1)
         end
 
-        apos = apos + aang:Forward() * moffset.x + aang:Right() * moffset.y + aang:Up() * moffset.z
+        apos = apos + forward * moffset.x + right * moffset.y + up * moffset.z
     end
 
-    if idle then
-        SafeRemoveEntity(parentmdl)
-    end
+    if idle then SafeRemoveEntity(parentmdl) end
 
-    local data = {
-        pos = apos,
-        ang = aang,
-        atttbl = atttbl,
-        slottbl = slottbl,
-    }
+    self.AttTempDataTbl = self.AttTempDataTbl or {}
+    local data = self.AttTempDataTbl
+    data.pos = apos
+    data.ang = aang
+    data.atttbl = atttbl
+    data.slottbl = slottbl
 
     data = self:RunHook("Hook_GetAttachmentPos", data) or data
 
@@ -404,18 +386,6 @@ function SWEP:SetupModel(wm, lod, cm)
         if !owner.GetViewModel then return end -- safe check to fix random mp error
 
         basemodel = owner:GetViewModel()
-
-        -- local RenderOverrideFunction = function(self2)
-        --     if LocalPlayer():GetActiveWeapon() != self then LocalPlayer():GetViewModel().RenderOverride = nil return end
-        --     if !IsValid(self) then LocalPlayer():GetViewModel().RenderOverride = nil return end
-
-        --     self:SetFiremodePose()
-        --     self2:DrawModel()
-        -- end
-
-        -- local vm = self:GetVM()
-
-        -- vm.RenderOverride = RenderOverrideFunction
     else
         if cm then
             self.CModel = mdl

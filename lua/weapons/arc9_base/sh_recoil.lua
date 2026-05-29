@@ -132,6 +132,10 @@ local function twoLenSqr(ang1, ang2)
     return (ang1[1] ^ 2) + (ang1[2] ^ 2) + (ang1[3] ^ 2) + (ang2[1] ^ 2) + (ang2[2] ^ 2) + (ang2[3] ^ 2)
 end
 
+local function angleLengthSqr(ang)
+    return (ang[1] * ang[1]) + (ang[2] * ang[2]) + (ang[3] * ang[3])
+end
+
 -- scraped from source SDK 2013, just like this viewpunch damping code
 -- local PUNCH_DAMPING = 6
 local PUNCH_SPRING_CONSTANT = 120
@@ -173,6 +177,35 @@ do
         local ft = CLIENT and RealFrameTime() or FrameTime()
         if ft == 0 then return end -- game is paused
 
+        local vpa = self:GetVisualRecoilPos()
+        local vpv = self:GetVisualRecoilPosVel()
+        local vaa = self:GetVisualRecoilAng()
+        local vav = self:GetVisualRecoilVel()
+
+        local recoilAmount = self:GetRecoilAmount()
+        local lastRecoilTime = self:GetLastRecoilTime()
+
+        if recoilAmount <= 0 and (lastRecoilTime + 0.75 < CurTime()) then
+            local posLenSqr = vpa:LengthSqr()
+            local velLenSqr = vpv:LengthSqr()
+            local angLenSqr = angleLengthSqr(vaa)
+            local angVelLenSqr = angleLengthSqr(vav)
+
+            if posLenSqr < 0.5 and velLenSqr < 0.5 and angLenSqr < 0.5 and angVelLenSqr < 0.5 then
+                if vpa[1] ~= 0 or vpa[2] ~= 0 or vpa[3] ~= 0 then
+                    self:SetVisualRecoilPos(vec0)
+                    self:SetVisualRecoilPosVel(vec0)
+                    self:SetVisualRecoilPosAcc(vec0)
+                    self:SetVisualRecoilAng(vec0)
+                    self:SetVisualRecoilVel(vec0)
+                    self:SetVisualRecoilAcc(vec0)
+                end
+
+                return
+            end
+        end
+
+
         local MAGIC1 = math.min(210, 210 / (ft / 0.015))
         
         if CLIENT and ft > 0.09 then -- super lag detected, clamping recoil
@@ -184,11 +217,9 @@ do
         local springdamping = swepGetProcessedValue(self, "VisualRecoilSpringPunchDamping", true) or 6
 
         if self.VisualRecoilThinkFunc then
-            springconstant, springmagnitude, springdamping = self.VisualRecoilThinkFunc(springconstant, springmagnitude, springdamping, self:GetRecoilAmount())
+            springconstant, springmagnitude, springdamping = self.VisualRecoilThinkFunc(springconstant, springmagnitude, springdamping, recoilAmount)
         end
 
-        local vpa = self:GetVisualRecoilPos()
-        local vpv = self:GetVisualRecoilPosVel()
         local vpc = self:GetVisualRecoilPosAcc()
 
         vpa = vpa + (vpv * ft) + (vpc * ft * ft * 0.5)
@@ -209,8 +240,6 @@ do
 
         -- New spring algorithm using the velocity Verlet integration
 
-        local vaa = self:GetVisualRecoilAng()
-        local vav = self:GetVisualRecoilVel()
         local vac = self:GetVisualRecoilAcc()
 
         vaa = vaa + (vav * ft) + (vac * ft * ft * 0.5)
@@ -231,7 +260,7 @@ do
 
 
         -- SUBTLE RECOIL MOVEMENT
-        if CLIENT and self.SubtleVisualRecoil and (self:GetLastRecoilTime() + 0.75 > CurTime()) then
+        if CLIENT and self.SubtleVisualRecoil and (lastRecoilTime + 0.75 > CurTime()) then
             ft = math.Clamp(ft, 0.005, 0.02)
             local springconstant2 = 150 * (self.SubtleVisualRecoilSpeed or 1)
             local springmagnitude2 = 0.3

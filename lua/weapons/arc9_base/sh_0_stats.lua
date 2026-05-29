@@ -420,7 +420,7 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
         self.StatCache[baseContValContCondition] = stat
     end
 
-    if quickmodifiers[val] and type(val) == 'number' then
+    if quickmodifiers[val] and type(stat) == 'number' then
         local convarvalue = quickmodifiers[val]:GetFloat()
 
         if val == "MalfunctionMeanShotsToFail" then  -- dont kill me for this pls

@@ -42,7 +42,7 @@ function SWEP:AttTreeToList(tree)
 end
 
 function SWEP:GetSubSlotList()
-    if (self.CacheLastInvalidation + 3) < CurTime() and self.GetSubSlotListCache then return self.GetSubSlotListCache end
+    if (self.CacheLastInvalidation or 0) + 3 < CurTime() and self.GetSubSlotListCache then return self.GetSubSlotListCache end
 
     if !self.Attachments then return {} end
     local atts = {}

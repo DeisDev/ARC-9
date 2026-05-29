@@ -5,6 +5,8 @@ SWEP.PV_CacheLong = {} -- ProcessedStatCache
 SWEP.PV_Cache = {} -- ProcessedDynamicStatCache
 
 SWEP.AttTableCache = {}
+SWEP.GetSubSlotListCache = nil
+SWEP.CacheLastInvalidation = 0
 
 SWEP.HookCache = {}
 SWEP.AffectorsCache = nil

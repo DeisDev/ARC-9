@@ -1,7 +1,7 @@
 local swepGetProcessedValue = SWEP.GetProcessedValue
 
 function SWEP:ThinkCycle()
-    if swepGetProcessedValue(self, "ManualAction", true) or self:StillWaiting() then return end
+    if !swepGetProcessedValue(self, "ManualAction", true) or self:StillWaiting() then return end
 
     local swepDt = self.dt
 
@@ -36,7 +36,7 @@ function SWEP:ThinkCycle()
             if ejectdelay == 0 then
                 self:DoEject()
             else
-                self:SetTimer(ejectdelay, self.DoEject)
+                self:SetTimer(ejectdelay, function() self:DoEject() end)
             end
         end
     end

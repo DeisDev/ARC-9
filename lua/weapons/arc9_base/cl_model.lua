@@ -23,7 +23,7 @@ function SWEP:GetAttachmentPos(slottbl, wm, idle, nomodeloffset, custompos, cust
                 parentmdl = self.CModel[1]
                 if parentmdl then parentmdl:SetupBones() end
             else
-                parentmdl = self.WModel[1]
+                parentmdl = self.WModel and self.WModel[1]
             end
         end
     else

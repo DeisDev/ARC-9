@@ -7,8 +7,6 @@ local hide = {
 }
 
 hook.Add("HUDShouldDraw", "ARC9_HideHUD", function(name)
-    if !IsValid(LocalPlayer()) then return end
-
     if ARC9.ShouldDrawHUD() then
         if hide[name] then return false end
     end
@@ -58,10 +56,13 @@ local arc9_hud_force_disable = GetConVar("arc9_hud_force_disable")
 local infammo = GetConVar("arc9_infinite_ammo")
 
 function ARC9.ShouldDrawHUD()
+    local lp = LocalPlayer()
+    if !IsValid(lp) then return end
+
     if !cl_drawhud:GetBool() then return end
     -- if arc9_hud_force_disable:GetBool() then return end
 
-    local wpn = LocalPlayer():GetActiveWeapon()
+    local wpn = lp:GetActiveWeapon()
     local a9 = wpn.ARC9 and !wpn.NotAWeapon
     local incust = a9 and wpn:GetCustomize()
     -- local hud = arc9_hud_arc9:GetBool()

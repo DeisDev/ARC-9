@@ -28,7 +28,7 @@ ARC9.IncompatibleAddons = {
     -- Advanced color tool
     ["692778306"] = "Incompatible, breaks every addon in existence",
     -- TF2 Killstreak Weapon Sheen
-    ["973050319"] = "Fucks up model rendering and other shit",
+    -- ["973050319"] = "Fucks up model rendering and other shit",
     -- View Model Bump
     ["1308077613"] = "Causes broken ADS/Sights position.",
     -- Improved Air To Surface Missile

@@ -91,17 +91,17 @@ function SWEP:SetFiremodePose(wm)
     end
 end
 
-local engineTickCount = engine.TickCount
+-- local engineTickCount = engine.TickCount
 
 local swepGetProcessedValue = SWEP.GetProcessedValue
 local swepGetValue = SWEP.GetValue
 
 function SWEP:GetCurrentFiremodeTable()
-    local tick = engineTickCount
+    -- local tick = engineTickCount
     
-    if self.CacheFMTblTick == tick then
-        return self.CacheFMTbl
-    end
+    -- if self.CacheFMTblTick == tick then
+    --     return self.CacheFMTbl
+    -- end
 
     local fm = self:GetFiremode()
     local firemodes = swepGetValue(self, "Firemodes")
@@ -113,18 +113,18 @@ function SWEP:GetCurrentFiremodeTable()
 
     local tbl = firemodes[fm]
 
-    self.CacheFMTblTick = tick
-    self.CacheFMTbl = tbl
+    -- self.CacheFMTblTick = tick
+    -- self.CacheFMTbl = tbl
 
     return tbl
 end
 
 function SWEP:GetCurrentFiremode()
-    local tick = engineTickCount
+    -- local tick = engineTickCount
     
-    if self.CacheFMTick == tick then
-        return self.CacheFM
-    end
+    -- if self.CacheFMTick == tick then
+    --     return self.CacheFM
+    -- end
 
     local mode
     
@@ -136,8 +136,8 @@ function SWEP:GetCurrentFiremode()
         mode = self:RunHook("Hook_TranslateMode") or mode
     end
 
-    self.CacheFMTick = tick
-    self.CacheFM = mode
+    -- self.CacheFMTick = tick
+    -- self.CacheFM = mode
 
     return mode
 end

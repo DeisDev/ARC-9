@@ -91,27 +91,55 @@ function SWEP:SetFiremodePose(wm)
     end
 end
 
-function SWEP:GetCurrentFiremode()
-    if self:GetUBGL() then
-        return self:GetProcessedValue("UBGLFiremode", true)
-    end
+local engineTickCount = engine.TickCount
 
-    mode = self:GetCurrentFiremodeTable().Mode
-
-    mode = self:RunHook("Hook_TranslateMode") or mode
-
-    return mode
-end
+local swepGetProcessedValue = SWEP.GetProcessedValue
+local swepGetValue = SWEP.GetValue
 
 function SWEP:GetCurrentFiremodeTable()
-    local fm = self:GetFiremode()
+    local tick = engineTickCount
+    
+    if self.CacheFMTblTick == tick then
+        return self.CacheFMTbl
+    end
 
-    if fm > #self:GetValue("Firemodes") then
+    local fm = self:GetFiremode()
+    local firemodes = swepGetValue(self, "Firemodes")
+    
+    if fm > #firemodes then
         fm = 1
         self:SetFiremode(fm)
     end
 
-    return self:GetValue("Firemodes")[fm]
+    local tbl = firemodes[fm]
+
+    self.CacheFMTblTick = tick
+    self.CacheFMTbl = tbl
+
+    return tbl
+end
+
+function SWEP:GetCurrentFiremode()
+    local tick = engineTickCount
+    
+    if self.CacheFMTick == tick then
+        return self.CacheFM
+    end
+
+    local mode
+    
+    if self:GetUBGL() then
+        mode = swepGetProcessedValue(self, "UBGLFiremode", true)
+    else
+        local tbl = self:GetCurrentFiremodeTable()
+        mode = tbl.Mode
+        mode = self:RunHook("Hook_TranslateMode") or mode
+    end
+
+    self.CacheFMTick = tick
+    self.CacheFM = mode
+
+    return mode
 end
 
 function SWEP:ToggleSafety(onoff)

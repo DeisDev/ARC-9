@@ -55,6 +55,7 @@ function ARC9.Move(ply, mv, cmd)
     if cmd:GetImpulse() == ARC9.IMPULSE_TOGGLEATTS or cmd:GetImpulse() == ARC9.IMPULSE_FAKETOGGLEATTS then
         if !wpn:StillWaiting() and !wpn:GetUBGL() then
             ply:EmitSound(wpn:RandomChoice(wpn:GetProcessedValue("ToggleAttSound", true)), 75, 100, 1, CHAN_ITEM)
+            wpn:Idle()
             wpn:PlayAnimation("toggle")
         end
     end

@@ -136,6 +136,7 @@ function SWEP:PostModify(toggleonly)
             self:SetupModel(false)
             self:SavePreset()
         else
+            timer.Simple(0, function() self:KillFlashlights() end)
             self:CreateFlashlights()
         end
         

@@ -1134,7 +1134,9 @@ end
 
 -- local headcontrol = {"ValveBiped.Bip01_Neck1", "ValveBiped.Bip01_Head1"}
 
-function SWEP:DoTPIK()
+function SWEP:DoTPIK(isdepth)
+    -- if isdepth then use previous values? no need for math
+
     local wm = self:GetWM()
 
     if ! IsValid(wm) then return end

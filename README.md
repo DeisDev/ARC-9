@@ -144,6 +144,8 @@ Hooks run in an order that can be compared as such:
 
 This is, essentially, a breadth-first tree unwrap which treats each top level slot as its own tree and processes them in numerical order.
 
+You can also hook into hooks _globally_ by using the standard Garrysmod hook system. Just preface the hook with ARC9_ to hook into it on all ARC9 guns.
+
 ### RHIK
 
 RHIK is a successor to LHIK. Now, RHIK supports multiple targets, using the RHIK stack. Whenever we request an animation to be played, we put it on top of the stack. Giving priority to the top animation, we blend it seamlessly with every other animation in the stack, giving us the ability to play multiple RHIK animations in quick succession to different targets with maximum smoothness.

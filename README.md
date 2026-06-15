@@ -144,7 +144,7 @@ Hooks run in an order that can be compared as such:
 
 This is, essentially, a breadth-first tree unwrap which treats each top level slot as its own tree and processes them in numerical order.
 
-You can also hook into hooks _globally_ by using the standard Garrysmod hook system. Just preface the hook with ARC9_ to hook into it on all ARC9 guns.
+You can also hook into hooks _globally_ by using the standard Garrysmod hook system. Just preface the hook with ARC9_ to hook into it on all ARC9 guns. Don't forget that if you wish to alter a stat, you still need to put "Hook" on the end, e.g. "ARC9_ReloadTimeHook".
 
 ### RHIK
 

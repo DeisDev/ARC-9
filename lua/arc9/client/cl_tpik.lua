@@ -15,9 +15,9 @@ hook.Add("PrePlayerDraw", "ARC9_TPIK", function(ply, flags)
             ply.ARC9LastTPIKTick = tick
 
             local wpn = ply:GetActiveWeapon()
-            if !wpn.ARC9 then return end
-
-            wpn:DoTPIK(flags == 134217729)
+            if wpn.ARC9 then
+                wpn:DoTPIK(flags == 134217729)
+            end
         end
     end
 end)

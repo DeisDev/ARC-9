@@ -201,22 +201,30 @@ function SWEP:RotateAroundPoint2(pos, ang, point, offset, offset_ang)
 end
 
 function SWEP:IsUsingRTScope()
-    return self:GetSightAmount() > 0.5 and self:GetSight() and self:GetSight().atttbl and self:GetSight().atttbl.RTScope and !self:GetSight().Disassociate
+    if self:GetSightAmount() < 0.5 then return false end
+
+    local sight = self:GetSight()
+    return sight and sight.atttbl and sight.atttbl.RTScope and !sight.Disassociate
 end
 
 if CLIENT then
+    local mathtan  = math.tan
+    local mathatan = math.atan
+    local halfrad   = math.pi / 360
+    local degbypi = 360 / math.pi
 
+    local function lScaleFOVByWidthRatio( fovDegrees, ratio )
+        return mathatan(mathtan( fovDegrees * halfrad ) * ratio) * degbypi
+    end
+    
     function SWEP:ScaleFOVByWidthRatio( fovDegrees, ratio )
-        local halfAngleRadians = fovDegrees * ( 0.5 * math.pi / 180 )
-        local t = math.tan( halfAngleRadians )
-        t = t * ratio
-        local retDegrees = ( 180 / math.pi ) * math.atan( t )
-        return retDegrees * 2
+        return lScaleFOVByWidthRatio(fovDegrees, ratio)
     end
 
+    local lol = ScrW() / ScrH() / ( 4 / 3 )
 
-    function SWEP:WidescreenFix(target)
-        return self:ScaleFOVByWidthRatio(target, ((ScrW and ScrW() or 4) / (ScrH and ScrH() or 3)) / (4 / 3))
+    function SWEP:WidescreenFix( target )
+        return lScaleFOVByWidthRatio(target, lol)
     end
 
     function SWEP:CallNonTPIKAnim(source)

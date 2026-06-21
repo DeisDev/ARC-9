@@ -160,7 +160,7 @@ function SWEP:SetBaseSettings()
     end
 end
 
-function SWEP:SetShouldHoldType()
+function SWEP:SetShouldHoldType(init)
     if self:GetOwner():IsNPC() then
         local htnpc = self:GetValue("HoldTypeNPC", true)
 
@@ -177,38 +177,39 @@ function SWEP:SetShouldHoldType()
         return
     end
 
-    if self:GetInSights() and !self:GetSafe() then
-        if self:GetProcessedValue("HoldTypeSights", true) then
-            self:SetHoldType(self:GetProcessedValue("HoldTypeSights", true))
+    if !init then
+        if self:GetInSights() and !self:GetSafe() then
+            if self:GetProcessedValue("HoldTypeSights", true) then
+                self:SetHoldType(self:GetProcessedValue("HoldTypeSights", true))
 
-            return
+                return
+            end
+        end
+
+        if self:GetCustomize() then
+            if self:GetProcessedValue("HoldTypeCustomize", true) then
+                self:SetHoldType(self:GetProcessedValue("HoldTypeCustomize", true))
+
+                return
+            end
+        end
+
+        if self:GetSafe() then
+            if self:GetProcessedValue("HoldTypeHolstered", true) then
+                self:SetHoldType(self:GetProcessedValue("HoldTypeHolstered", true))
+
+                return
+            end
+        end
+
+        if self:GetIsSprinting() or self:GetSafe() then
+            if self:GetProcessedValue("HoldTypeSprint", true) then
+                self:SetHoldType(self:GetProcessedValue("HoldTypeSprint", true))
+                return
+            end
         end
     end
-
-    if self:GetCustomize() then
-        if self:GetProcessedValue("HoldTypeCustomize", true) then
-            self:SetHoldType(self:GetProcessedValue("HoldTypeCustomize", true))
-
-            return
-        end
-    end
-
-    if self:GetSafe() then
-        if self:GetProcessedValue("HoldTypeHolstered", true) then
-            self:SetHoldType(self:GetProcessedValue("HoldTypeHolstered", true))
-
-            return
-        end
-    end
-
-    if self:GetIsSprinting() or self:GetSafe() then
-        if self:GetProcessedValue("HoldTypeSprint", true) then
-            self:SetHoldType(self:GetProcessedValue("HoldTypeSprint", true))
-
-            return
-        end
-    end
-
+    
     self:SetHoldType(self:GetProcessedValue("HoldTypeDefault", true) or self:GetValue("HoldType", true))
 end
 

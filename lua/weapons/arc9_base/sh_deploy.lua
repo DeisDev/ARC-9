@@ -89,7 +89,7 @@ function SWEP:Deploy()
         end
     end
 
-    self:SetShouldHoldType()
+    self:SetShouldHoldType(true)
 
     self:RunHook("Hook_Deploy")
 

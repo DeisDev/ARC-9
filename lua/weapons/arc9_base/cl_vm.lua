@@ -235,9 +235,11 @@ function SWEP:PreDrawViewModel(vm, weapon, ply, flags)
 
 	if !isDepthPass then
     	vm:SetSubMaterial()
-        if !vm.MaterialAmount then vm.MaterialAmount = table.Count(vm:GetMaterials() or {}) end
+        if !self.VMMaterialAmount and vm:GetMaterials() then 
+            self.VMMaterialAmount = util.GetModelInfo(vm:GetModel()).MaterialCount
+        end
 
-    	for ind = 0, vm.MaterialAmount do
+    	for ind = 0, self.VMMaterialAmount or 31 do
     	    local val = self:GetProcessedValue("SubMaterial" .. ind, true)
     	    if val then
     	        vm:SetSubMaterial(ind, val)

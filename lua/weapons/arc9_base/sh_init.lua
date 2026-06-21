@@ -205,7 +205,6 @@ function SWEP:SetShouldHoldType(init)
         if self:GetIsSprinting() or self:GetSafe() then
             if self:GetProcessedValue("HoldTypeSprint", true) then
                 self:SetHoldType(self:GetProcessedValue("HoldTypeSprint", true))
-                print("mrow")
                 return
             end
         end

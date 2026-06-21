@@ -260,9 +260,12 @@ function SWEP:RenderRT(cheap, magnification)
             if fpslock_nextdraw < CurTime() then
                 fpslock_nextdraw = CurTime() + 1 / fpslock
                 render.PushRenderTarget( fpslock_texture )
+                    local oldtune = render.GetToneMappingScaleLinear()
+                    render.SetToneMappingScaleLinear( tune_nohdr ) -- Turns off hdr
                     render.SetMaterial( cheap and mat_rt_cheap or mat_rt_expensive )
                     -- render.SetMaterial( pixely and mat_pixel_lense or mat_shader_lense )
                     render.DrawScreenQuad()
+                    render.SetToneMappingScaleLinear( oldtune ) -- Resets hdr
                 render.PopRenderTarget()
             end
         end
@@ -517,8 +520,11 @@ function SWEP:DrawRTReticle(model, atttbl, nonatt, cheap)
             render.PushRenderTarget(cheap and rt_cheap or rt_main)
 
             if atttbl.RTScopeNew_FPSLock then
+                local oldtune = render.GetToneMappingScaleLinear()
+                render.SetToneMappingScaleLinear( tune_nohdr ) -- Turns off hdr
                 render.SetMaterial( fpslock_mat )
                 render.DrawScreenQuad()
+                -- render.SetToneMappingScaleLinear( oldtune ) -- Resets hdr
             end
 
             self:DoRTScopeEffects()

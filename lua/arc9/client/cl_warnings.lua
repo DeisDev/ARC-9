@@ -55,6 +55,8 @@ ARC9.IncompatibleAddons = {
     ["3265879428"] = "Breaks scopes picture",    
     -- Realistic VHS Effect2
     ["3494727681"] = "Breaks scopes picture",
+    -- Sound Muffling Effect
+    ["3529402381"] = "Causes issues with gunfire audio.",
 }
 
 local ScreenScaleMulti = ARC9.ScreenScale

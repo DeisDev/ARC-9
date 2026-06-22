@@ -883,7 +883,12 @@ local function SetTPIKOffset(self, wm, owner, lp)
         if sightdelta > 0 then -- sight offset
             local sightdelta2 = math.ease.InOutCubic(sightdelta)
             pos:Add(self.WorldModelOffset.TPIKPosSightOffset * sightdelta2)
-            ang:Add(someangforsights * math.sin(3.1415926 * math.ease.InOutSine(sightdelta)))
+            local angofset = self.WorldModelOffset.TPIKAngSightOffset
+            if angofset then
+                ang:Add(angofset * sightdelta2)
+            else
+                ang:Add(someangforsights * math.sin(3.1415926 * math.ease.InOutSine(sightdelta)))
+            end
         end
 
         if self.WorldModelOffset.TPIKPosReloadOffset then

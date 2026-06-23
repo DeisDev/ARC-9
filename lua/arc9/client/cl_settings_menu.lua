@@ -256,6 +256,7 @@ ARC9.SettingsTable = {
         { type = "label", text = "settings.tabname.features", desc = "settings.tabname.features.desc" },
         { sv = true, type = "bool", text = "settings.server.gameplay.mod_sway.title", desc = "settings.server.gameplay.mod_sway.desc", convar = "mod_sway" },
         { sv = true, type = "bool", text = "settings.server.gameplay.breath_slowmo.title", desc = "settings.server.gameplay.breath_slowmo.desc", convar = "breath_slowmo" },
+        { sv = true, type = "bool", text = "settings.server.gameplay.breath_infinite.title", desc = "settings.server.gameplay.breath_infinite.desc", convar = "breath_infinite" },
         { type = "bool", text = "settings.gameplay.togglebreath.title", desc = "settings.gameplay.togglebreath.desc", convar = "togglebreath" },
         { type = "bool", text = "settings.centerhint.breath_hud.title", desc = "settings.centerhint.breath_hud.desc", convar = "breath_hud" },
         { type = "bool", text = "settings.centerhint.breath_pp.title", desc = "settings.centerhint.breath_pp.desc", convar = "breath_pp" },

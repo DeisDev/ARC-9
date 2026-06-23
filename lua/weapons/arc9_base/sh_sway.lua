@@ -2,6 +2,7 @@ SWEP.SetBreathDSP = false
 
 local sfxconvar = GetConVar("arc9_breath_sfx")
 local slomoconvar = GetConVar("arc9_breath_slowmo")
+local infbreathconvar = GetConVar("arc9_breath_infinite")
 local togglconvar = GetConVar("arc9_togglebreath")
 local ppconvar = GetConVar("arc9_breath_pp")
 local hudconvar = GetConVar("arc9_breath_hud")
@@ -14,11 +15,18 @@ function SWEP:ThinkHoldBreath()
     if holdbreathtime <= 0 then return end
 
     local sfx = sfxconvar:GetBool()
+    local infinitebreath = infbreathconvar:GetBool()
 
     local target_ts = 1
 
     if self:HoldingBreath() then
-        self:SetBreath(self:GetBreath() - (FrameTime() * 100 / holdbreathtime))
+        if infinitebreath then
+            self:SetBreath(100)
+            self:SetOutOfBreath(false)
+        else
+            self:SetBreath(self:GetBreath() - (FrameTime() * 100 / holdbreathtime))
+        end
+
         if self:GetBreath() < 0 then
             self:SetOutOfBreath(true)
             self:SetBreath(0)
@@ -93,7 +101,7 @@ function SWEP:ThinkHoldBreath()
 end
 
 function SWEP:CanHoldBreath()
-    return self:GetBreath() > 0 and !self:GetOutOfBreath()
+    return infbreathconvar:GetBool() or (self:GetBreath() > 0 and !self:GetOutOfBreath())
 end
 
 local lastpressed = false

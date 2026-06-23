@@ -380,6 +380,11 @@ local conVars = {
         replicated = true
     },
     {
+        name = "breath_infinite",
+        default = "0",
+        replicated = true
+    },
+    {
         name = "ricochet",
         default = "1",
         replicated = true

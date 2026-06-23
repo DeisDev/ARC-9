@@ -2,6 +2,7 @@ local cancelmults = ARC9.CancelMultipliers[engine.ActiveGamemode()] or ARC9.Canc
 
 local swepGetProcessedValue = SWEP.GetProcessedValue
 local swepGetValue = SWEP.GetValue
+local infbreathconvar = GetConVar("arc9_breath_infinite")
 
 local sp = game.SinglePlayer()
 
@@ -474,7 +475,7 @@ function SWEP:DoPrimaryAttack()
     self:DoEffects()
 
 
-    if self:HoldingBreath() then
+    if self:HoldingBreath() and !infbreathconvar:GetBool() then
         local d = 100 / math.max(1, swepGetProcessedValue(self, "HoldBreathTime", true))
         local breathtake = math.Clamp(delay * d * 3, 1, 10)
         if manualaction then

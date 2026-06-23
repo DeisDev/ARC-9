@@ -815,6 +815,9 @@ L["settings.server.gameplay.mod_sway.desc"] = "Enable weapon sway (if the weapon
 L["settings.server.gameplay.breath_slowmo.title"] = "Enable Slow-Mo when Holding Breath (Singleplayer)"
 L["settings.server.gameplay.breath_slowmo.desc"] = "! Singleplayer Only !\nHolding your breath slows down time."
 
+L["settings.server.gameplay.breath_infinite.title"] = "Infinite Hold Breath"
+L["settings.server.gameplay.breath_infinite.desc"] = "Holding your breath does not drain the breath meter."
+
 L["settings.gameplay.togglebreath.title"] = "Toggle Holding Breath"
 L["settings.gameplay.togglebreath.desc"] = "Pressing your sprint button toggles holding breath."
 

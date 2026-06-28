@@ -195,13 +195,14 @@ function ARC9.LoadAtts()
 
     for _, filename in pairs(bulkfiles) do
         if filename == "default.lua" then continue end
+        local fn = string.Replace(filename, " ", "")
 
-        AddCSLuaFile(searchdir_bulk .. filename)
+        AddCSLuaFile(searchdir_bulk .. fn)
 
         Attachments_LuaCount = Attachments_LuaCount + 1
         Attachments_BulkCount = Attachments_BulkCount + 1
         
-        include(searchdir_bulk .. filename)
+        include(searchdir_bulk .. fn)
     end
 
     print("ARC9 Registered " .. tostring(ARC9.Attachments_Count) .. " attachments. (" .. Attachments_LuaCount .. " lua files total, " .. Attachments_BulkCount .. " bulk/" .. Attachments_RegularCount .. " regular)")

@@ -5,8 +5,8 @@ L = {}
 
 /////////////////////////////////////// General
 ////////////////////// Translation
-L["translation.name"] = "Korean"
-L["translation.authors"] = "Gohaneul"
+L["translation.name"] = "한국어 번역본"
+L["translation.authors"] = "고하늘"
 
 --[[
 "translation.name" should be changed to "English Translation" but translated

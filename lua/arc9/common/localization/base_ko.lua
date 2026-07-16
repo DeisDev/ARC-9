@@ -5,8 +5,8 @@ L = {}
 
 /////////////////////////////////////// General
 ////////////////////// Translation
-L["translation.name"] = false
-L["translation.authors"] = "고하늘"
+L["translation.name"] = "Korean"
+L["translation.authors"] = "Gohaneul"
 
 --[[
 "translation.name" should be changed to "English Translation" but translated
@@ -631,6 +631,9 @@ L["settings.blur.fx_rtblur.desc"] = "고배율 조준경으로 조준 시 주변
 L["settings.blur.fx_adsblur.title"] = "정조준 시 흐려지는 효과 활성화"
 L["settings.blur.fx_adsblur.desc"] = "정조준 시 가장자리가 흐려지는 효과가 발생합니다.\n\n일부 무기에는 적용되지 않습니다."
 
+L["settings.blur.fx_adsblur_always.title"] = "현실적으로 흐려지는 옵션"
+L["settings.blur.fx_adsblur_always.desc"] = "조금 더 현실적으로 흐려지는 시각효과를 주기 위한 옵션입니다. 조준을 하고 있지 않아도 효과가 발생됩니다."
+
 ////////// Effects
 L["settings.tabname.effects"] = "효과"
 L["settings.tabname.effects.desc"] = "보이는 효과들을 조정합니다."
@@ -762,6 +765,12 @@ L["settings.gameplay.gradualsens.desc"] = "비조준과 정조준의 감도를 �
 L["settings.gameplay.color.reflex.title"] = "조준경의 조준선 색상"
 L["settings.gameplay.color.reflex.desc"] = "무배율 조준경의 조준선의 색상을 지정합니다.\n\n일부 조준경에는 지원하지 않습니다."
 
+L["settings.gameplay.fx_rt_alwaysdraw.title"] = "고품질 조준경 세부 렌더링"
+L["settings.gameplay.fx_rt_alwaysdraw.desc"] = "조준을 안 하고 있어도 조준경의 내부를 렌더링합니다./n/n 저품질 조준경을 사용 하고 있을 때는 게임 성능에 크게 영향이 없습니다."
+
+L["settings.gameplay.fx_rt_shader.title"] = "고품질 조준경에 화려한 쉐이더 적용"
+L["settings.gameplay.fx_rt_shader.desc"] = "고품질 조준경에 색수차, 광학 왜곡, 시차 효과같은 다양한 시각효과를 부여합니다.\n\n간단한 그래픽 쉐이더라서 실제로 게임 성능에 영향이 있는 지는 잘 모르겠습니다.\n\nshadertoy.com/view/WX2cRd by science6uru2를 모방했습니다."
+
 L["settings.gameplay.color.scope.title"] = "배율조준경 십자선 색상"
 L["settings.gameplay.color.scope.desc"] = "배율 조준경의 조준선 색상을 지정합니다.\n\n일부 조준경에는 지원하지 않습니다."
 
@@ -790,6 +799,9 @@ L["settings.server.gameplay.mod_sway.desc"] = "화기가 흔들리게 하는 기
 
 L["settings.server.gameplay.breath_slowmo.title"] = "숨 참기 시 느린모션 활성화 (싱글플레이 전용)"
 L["settings.server.gameplay.breath_slowmo.desc"] = "! 싱글플레이 전용입니다 !\n숨을 참으면 시간이 느려집니다."
+
+L["settings.server.gameplay.breath_infinite.title"] = "제한 없는 숨 참기"
+L["settings.server.gameplay.breath_infinite.desc"] = "숨을 참는 기간을 무한으로 늘립니다."
 
 L["settings.gameplay.togglebreath.title"] = "숨참기 전환 방식 변경"
 L["settings.gameplay.togglebreath.desc"] = "전력질주 버튼을 눌러 숨참기 상태를 고정 혹은 홀드 방식으로 변경합니다."

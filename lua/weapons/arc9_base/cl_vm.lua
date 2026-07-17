@@ -17,6 +17,8 @@ local arc9_cust_light_brightness = GetConVar("arc9_cust_light_brightness")
 local arc9_dev_benchgun = GetConVar("arc9_dev_benchgun")
 local arc9_fx_adsblur_new = GetConVar("arc9_fx_adsblur_new")
 local arc9_fx_adsblur_always = GetConVar("arc9_fx_adsblur_always")
+local arc9_fx_adsblur_bleeding = GetConVar("arc9_fx_adsblur_bleeding")
+local arc9_fx_adsblur_bleeding_amount = GetConVar("arc9_fx_adsblur_bleeding_amount")
 
 
 local tune_nohdr = Vector(1, 0, 0 )
@@ -73,6 +75,13 @@ local function DrawCheapBlur(intensity, self)
     end
 end
 
+local rt_prevm = GetRenderTargetEx("arc9_prevm", 1024, 1024, 
+    RT_SIZE_LITERAL,
+    MATERIAL_RT_DEPTH_NONE,
+    bit.bor(2,4,8,256,512), 
+    0,
+    IMAGE_FORMAT_RGBA8888
+)
 
 hook.Add("ShouldDrawAmbientOcclusion", "ARC9.RemoveAO", function(a)
     -- if lastblurtime == FrameNumber() then return false end -- wanted to do it in every blur case but nah
@@ -225,6 +234,11 @@ function SWEP:PreDrawViewModel(vm, weapon, ply, flags)
     	if !ARC9_ENABLE_NEWSCOPES_MEOW and self:GetHolsterTime() < CurTime() and self.RTScope and sightamount > 0 then
     	    self:DoRTScope(vm, self:GetTable(), sightamount > 0)
     	end
+        
+        if arc9_fx_adsblur_bleeding:GetBool() then
+            render.UpdateScreenEffectTexture()
+            render.CopyTexture(render.GetScreenEffectTexture(), rt_prevm)
+        end
     end
 
     if !arc9_dev_benchgun:GetBool() then
@@ -326,6 +340,7 @@ function SWEP:ViewModelDrawn(ent, flags)
 end
 
 local mat_dof = Material( "effects/arc9/vm_dof" )
+local mat_dof2 = Material( "effects/arc9/vm_dof2" )
 local mat_dof_debug = Material( "effects/arc9/vm_dof_debug" )
 local mat_white = Material( "effects/arc9/whiteunlit" )
 local mat_black = Material( "effects/arc9/blackunlit" )
@@ -344,6 +359,14 @@ local function shadersetstaticvalues()
     mat_dof:SetTexture("$texture1", rt_dofmask:GetName())
     mat_dof:SetFloat("$c0_x", 0) -- 8
     mat_dof:SetFloat("$c0_y", 0.07)
+
+    mat_dof2:SetFloat("$c1_x", 1 / scrw)
+    mat_dof2:SetFloat("$c1_y", 1 / scrh)
+    mat_dof2:SetTexture("$texture1", rt_dofmask:GetName())
+    mat_dof2:SetFloat("$c0_x", 0) -- 8
+    mat_dof2:SetFloat("$c0_y", 0.07)
+    mat_dof2:SetFloat("$c2_w", math.Clamp(arc9_fx_adsblur_bleeding_amount:GetInt(), 1, 60))
+
     mat_dof_debug:SetTexture("$texture1", rt_dofmask:GetName())
     mat_dof_debug:SetFloat("$c0_y", 0.07)
 end
@@ -360,9 +383,15 @@ local mat_dof_mask_debug = CreateMaterial("mat_debug_arc9_dof_mask5", "UnlitGene
 
 function SWEP:DoFSetParams(strength)
     mat_dof:SetFloat("$c0_x", 8 * strength)
+    
+    if arc9_fx_adsblur_bleeding:GetBool() then
+        mat_dof2:SetFloat("$c0_x", 8 * strength)
+        mat_dof2:SetFloat("$c2_w", math.Clamp(arc9_fx_adsblur_bleeding_amount:GetInt(), 1, 60))
+    end
 
     if !self.DoFDepthSet then 
         mat_dof:SetFloat("$c0_y", self.DoFDepth or 0.07)
+        mat_dof2:SetFloat("$c0_y", self.DoFDepth or 0.07)
         shadersetstaticvalues()
         self.DoFDepthSet = true
     end
@@ -370,7 +399,7 @@ end
 
 function SWEP:RenderDoF()
     render.UpdateScreenEffectTexture()
-    render.SetMaterial(mat_dof)
+    render.SetMaterial(arc9_fx_adsblur_bleeding:GetBool() and mat_dof2 or mat_dof)
     render.DrawScreenQuad()
 
     -- if ARC9.Dev(2) then
@@ -440,8 +469,9 @@ function SWEP:RenderDoFMask(clear)
             local oldtune = render.GetToneMappingScaleLinear()
             render.SetToneMappingScaleLinear(tune_nohdr) -- Turns off hdr
             render.ClearDepth()
-            local sa = self:GetSightAmount()
-            sa = sa * sa
+            -- local sa = self:GetSightAmount()
+            -- sa = sa * sa
+            local sa = 1
             render.SetColorModulation(sa, sa, sa)
             render.SuppressEngineLighting(true)
 
@@ -513,7 +543,7 @@ function SWEP:PostDrawViewModel(vm, weapon, ply, flags)
     if activedof then
         sigt = self:GetSight()
         sa = self:GetSightAmount()
-        notactivemask = sa < 0.01 or !(sigt.atttbl and (sigt.atttbl.RTScope or sigt.atttbl.RTScopeNew_BlurTexture)) or self.Peeking
+        notactivemask = !(sigt.atttbl and (sigt.atttbl.RTScope or sigt.atttbl.RTScopeNew_BlurTexture))
     end
 
     self.RenderingHolosight = false

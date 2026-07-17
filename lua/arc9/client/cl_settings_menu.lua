@@ -193,6 +193,8 @@ ARC9.SettingsTable = {
         
         { type = "bool", text = "settings.blur.fx_rtblur.title", desc = "settings.blur.fx_rtblur.desc", convar = "fx_rtblur" },
         { type = "bool", text = "settings.blur.fx_adsblur.title", desc = "settings.blur.fx_adsblur.desc", convar = "fx_adsblur_new" },
+        { type = "bool", text = "settings.blur.fx_adsblur_bleeding.title", desc = "settings.blur.fx_adsblur_bleeding.desc", convar = "fx_adsblur_bleeding", parentconvar = "fx_adsblur_new" },
+        { type = "slider", text = "settings.blur.fx_adsblur_bleeding_amount.title", desc = "settings.blur.fx_adsblur_bleeding_amount.desc", convar = "fx_adsblur_bleeding_amount", parentconvar = "fx_adsblur_new+fx_adsblur_bleeding", min = 1, max = 60 },
         { type = "bool", text = "settings.blur.fx_adsblur_always.title", desc = "settings.blur.fx_adsblur_always.desc", convar = "fx_adsblur_always", parentconvar = "fx_adsblur_new" },
 
     },
@@ -212,6 +214,8 @@ ARC9.SettingsTable = {
         { type = "bool", text = "settings.blur.fx_inspectblur.title", desc = "settings.blur.fx_inspectblur.desc", convar = "fx_inspectblur", parentconvar = "fx_reloadblur" },
         { type = "bool", text = "settings.blur.fx_rtblur.title", desc = "settings.blur.fx_rtblur.desc", convar = "fx_rtblur" },
         { type = "bool", text = "settings.blur.fx_adsblur.title", desc = "settings.blur.fx_adsblur.desc", convar = "fx_adsblur_new" },
+        { type = "bool", text = "settings.blur.fx_adsblur_bleeding.title", desc = "settings.blur.fx_adsblur_bleeding.desc", convar = "fx_adsblur_bleeding", parentconvar = "fx_adsblur_new" },
+        { type = "slider", text = "settings.blur.fx_adsblur_bleeding_amount.title", desc = "settings.blur.fx_adsblur_bleeding_amount.desc", convar = "fx_adsblur_bleeding_amount", parentconvar = "fx_adsblur_new+fx_adsblur_bleeding", min = 1, max = 60 },
         { type = "bool", text = "settings.blur.fx_adsblur_always.title", desc = "settings.blur.fx_adsblur_always.desc", convar = "fx_adsblur_always", parentconvar = "fx_adsblur_new" },
 
         { type = "label", text = "settings.tabname.effects", desc = "settings.tabname.effects.desc" },
@@ -529,11 +533,19 @@ local function DrawSettings(bg, page)
                 end
 
                 if v2.parentconvar then
-                    local boolll = GetConVar("arc9_" .. v2.parentconvar)
-                    if v2.parentinvert then
-                        boolll = boolll:GetFloat() >= 0.001
-                    else
-                        boolll = boolll:GetFloat() < 0.001
+                    local cvarss = string.Split(v2.parentconvar, "+")
+                    local boolll = true
+
+                    for _, cvarr in ipairs(cvarss) do
+                        local cvarr = GetConVar("arc9_" .. cvarr)
+                        if !cvarr or cvarr:GetFloat() < 0.001 then
+                            boolll = false
+                            break
+                        end
+                    end
+
+                    if !v2.parentinvert then
+                        boolll = !boolll
                     end
 
                     if boolll then

@@ -1,10 +1,11 @@
 screenspace_general
 {
-	$pixshader "arc9_vm_dof_ps30"
+	$pixshader "arc9_vm_dof_v2_17_ps30"
 	$vertexshader 	"arc9_pp_vs30"
 
 	$basetexture "_rt_FullFrameFB"
 	$texture1    "_rt_ResolvedFullFrameDepth"
+	$texture2    "arc9_prevm"
 
 	$vertexcolor 1
 	$vertextransform 1
@@ -24,10 +25,15 @@ screenspace_general
 	$linearread_texture2       0
 	$linearread_texture3       0
 
-	$c0_x     0.000390625
-	$c0_y     0.00069444444444444
+	$c0_x     0.00390625
+	$c0_y     0.0069444444444444
 
 
-	$c1_x     10
+	$c1_x     1
 	$c1_y     0.07
+
+	$c2_x     1 // intensity
+	$c2_y     0.9 // depth threshold
+	$c2_z     1.25 // falloff
+	$c2_w     14 // amount of bleed
 }

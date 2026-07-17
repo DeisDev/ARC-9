@@ -646,6 +646,12 @@ L["settings.blur.fx_adsblur.desc"] = "Applies a Depth of Field effect on top of 
 L["settings.blur.fx_adsblur_always.title"] = "Weapon DoF always"
 L["settings.blur.fx_adsblur_always.desc"] = "Same as option above, but outside of ADS too, making back of weapon look like its out of focus."
 
+L["settings.blur.fx_adsblur_bleeding.title"] = "DoF Background Bleeding"
+L["settings.blur.fx_adsblur_bleeding.desc"] = "More advanced Depth of Field shader that softly blends background and the weapon for a more realistic effect.\n\nMay or may not impact performance."
+
+L["settings.blur.fx_adsblur_bleeding_amount.title"] = "Background Bleeding Amount"
+L["settings.blur.fx_adsblur_bleeding_amount.desc"] = "Controls how strong the background bleeding effect is."
+
 ////////// Effects
 L["settings.tabname.effects"] = "Effects"
 L["settings.tabname.effects.desc"] = "Adjust certain visual effects."

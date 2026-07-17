@@ -1011,6 +1011,16 @@ local conVars = {
         default = "0",
         client = true
     },
+    {
+        name = "fx_adsblur_bleeding",
+        default = "1",
+        client = true
+    },
+    {
+        name = "fx_adsblur_bleeding_amount",
+        default = "10",
+        client = true
+    },
 }
 
 ARC9.ConVarData = {}

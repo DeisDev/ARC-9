@@ -386,7 +386,7 @@ function SWEP:DoFSetParams(strength)
     
     if arc9_fx_adsblur_bleeding:GetBool() then
         mat_dof2:SetFloat("$c0_x", 8 * strength)
-        mat_dof2:SetFloat("$c2_w", math.Clamp(arc9_fx_adsblur_bleeding_amount:GetInt(), 1, 60))
+        mat_dof2:SetFloat("$c2_w", math.Clamp(arc9_fx_adsblur_bleeding_amount:GetInt(), 1, 60) * strength)
     end
 
     if !self.DoFDepthSet then 

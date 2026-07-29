@@ -591,6 +591,8 @@ local function DrawSettings(bg, page)
                     end
                 end
 
+                if ARC9.IntelGPUDetected and v2.text == "settings.blur.fx_adsblur.title" then v2.text = "settings.blur.fx_adsblur.intel" end
+                
                 txt = txt .. (ARC9:GetPhrase(v2.text) or ARC9:GetPhrase("settings" .. "." .. (v2.convar or "") .. ".title") or v2.text or "")
 
                 surface.SetFont("ARC9_12_Slim")

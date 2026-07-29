@@ -538,7 +538,7 @@ function SWEP:PostDrawViewModel(vm, weapon, ply, flags)
     if inrt then return end
 
     local sigt, sa, notactivemask
-    local activedof = !fuckopengl and arc9_fx_adsblur_new:GetBool()
+    local activedof = !fuckopengl and !ARC9.IntelGPUDetected and arc9_fx_adsblur_new:GetBool()
 
     if activedof then
         sigt = self:GetSight()

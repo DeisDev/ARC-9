@@ -641,7 +641,8 @@ L["settings.blur.fx_rtblur.title"] = "Blur world when aiming RT scopes"
 L["settings.blur.fx_rtblur.desc"] = "Blurs the background when aiming with any RT scope."
 
 L["settings.blur.fx_adsblur.title"] = "Weapon DoF effect when aiming"
-L["settings.blur.fx_adsblur.desc"] = "Applies a Depth of Field effect on top of viewmodel, blurring rear sights and scopes.\n\nUses Poisson disk blur from github.com/spite/Wagner, as well as luluco250's LightDoF shader."
+L["settings.blur.fx_adsblur.desc"] = "Applies a Depth of Field effect on top of viewmodel, blurring rear sights and scopes.\n\nUses Poisson disk blur from github.com/spite/Wagner, as well as luluco250's LightDoF shader.\n\nCauses crashes on modern Intel ARC/Iris GPUs."
+L["settings.blur.fx_adsblur.intel"] = "(Unavailable on Intel GPU) Weapon DoF"
 
 L["settings.blur.fx_adsblur_always.title"] = "Weapon DoF always"
 L["settings.blur.fx_adsblur_always.desc"] = "Same as option above, but outside of ADS too, making back of weapon look like its out of focus."

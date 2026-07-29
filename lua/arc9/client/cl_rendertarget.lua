@@ -35,7 +35,7 @@ hook.Add("RenderScreenspaceEffects", "ARC9_PostDrawViewModels", function()
 
     if !wpn.ARC9 then return end
     
-    if mat_dof:GetFloat("$c0_x") > 0.4 then -- thats prob cheaper than checking for all conditions, handled in cl_vm anyway
+    if !ARC9.IntelGPUDetected and mat_dof:GetFloat("$c0_x") > 0.4 then -- thats prob cheaper than checking for all conditions, handled in cl_vm anyway
         wpn:RenderDoF()
     end
 
@@ -45,3 +45,40 @@ hook.Add("RenderScreenspaceEffects", "ARC9_PostDrawViewModels", function()
 
     wpn:DrawRTReticle(wpn.RTScopeModel, atttbl or {}, nil, wpn:IsCheapScope())
 end)
+
+
+-- intel gpu detection
+ARC9.IntelGPUDetected = false
+
+if !system.IsLinux() and !system.IsOSX() then
+    hook.Add("DrawOverlay", "IntelGPUDetector3000", function()
+        hook.Remove("DrawOverlay", "IntelGPUDetector3000") -- run only once
+        
+        local RGBA8888 = 0
+        local BGRA4444 = 19
+        
+        for _, d3dformat in ipairs( { BGRA4444, RGBA8888 } ) do
+            local rt = GetRenderTargetEx("gpu_vendorcheck_" .. d3dformat, 16, 16, 0, 0, 32768, 0, d3dformat)
+            if !rt then continue end
+            
+            render.PushRenderTarget(rt)
+                cam.Start2D()
+                    render.Clear(12, 77, 137, 211, true, true)
+                    render.CapturePixels()
+                    
+                    local thepixel = render.ReadPixel(8, 8) 
+                cam.End2D()
+            render.PopRenderTarget()
+
+            if d3dformat == BGRA4444 and thepixel == 16 then
+                ARC9.IntelGPUDetected = true -- modern ARC - something diffferent with bgra4444
+                break
+            elseif d3dformat == RGBA8888 and math.abs(thepixel - 61) <= 2 then
+                ARC9.IntelGPUDetected = true  -- legacy intel - applies a 2.2 gamma
+                break
+            end
+        end
+    end)
+else -- opengl treated as intel too cuz weak
+    ARC9.IntelGPUDetected = true
+end

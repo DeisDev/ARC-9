@@ -4,7 +4,7 @@ function SWEP:RollJam()
     if !self:GetProcessedValue("Malfunction", true) then return end
     if self:Clip1() == 0 and self.MalfunctionNeverLastShoot then return end
 
-    local chance = 1 / self:GetProcessedValue("MalfunctionMeanShotsToFail")
+    local chance = 1 / math.max(4, self:GetProcessedValue("MalfunctionMeanShotsToFail"))
 
     if util.SharedRandom("arc9_jam", 0, 1000) / 1000 <= chance then
         if self:GetProcessedValue("MalfunctionJam", true) then

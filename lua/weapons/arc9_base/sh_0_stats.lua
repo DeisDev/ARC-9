@@ -120,15 +120,14 @@ end
 
 local function getFinalAttTable(self, slot)
     if !slot or !slot.Installed then return {} end
-    do
-        local cache = self.AttTableCache[slot]
-        if cache then
-            if cache.ToggleStats then
-                table.Merge(cache, cache.ToggleStats[slot.ToggleNum or 1] or {})
-            end
 
-            return cache
+    local cache = self.AttTableCache[slot]
+    if cache then
+        local result = table.Copy(cache) -- Create a copy so we don't mutate the cache
+        if result.ToggleStats then
+            table.Merge(result, result.ToggleStats[slot.ToggleNum or 1] or {})
         end
+        return result
     end
 
     local atttbl = table.Copy(ARC9.GetAttTable(slot.Installed) or {})
@@ -139,11 +138,12 @@ local function getFinalAttTable(self, slot)
 
     self.AttTableCache[slot] = atttbl
 
-    if atttbl.ToggleStats then
-        table.Merge(atttbl, atttbl.ToggleStats[slot.ToggleNum or 1] or {})
+    local result = table.Copy(atttbl) -- Create a copy of the new cache
+    if result.ToggleStats then
+        table.Merge(result, result.ToggleStats[slot.ToggleNum or 1] or {})
     end
 
-    return atttbl
+    return result
 end
 
 function SWEP:GetFinalAttTable(slot)
@@ -257,7 +257,7 @@ local function runHook(self, val, data)
             any = true
         end
 
-        data2 = hook.Run("ARC9_" .. val, self, data)
+        local data2 = hook.Run("ARC9_" .. val, self, data)
         if data2 ~= nil then
             data = data2
         end
@@ -275,6 +275,7 @@ local function runHook(self, val, data)
         local mod = elem[val]
 
         if mod and isfunction(mod) then
+            any = true
             cacheLen = cacheLen + 1
             newCache[cacheLen] = mod
 
@@ -286,7 +287,7 @@ local function runHook(self, val, data)
     end
 
     self.HookCache[val] = newCache
-    data2 = hook.Run("ARC9_" .. val, self, data)
+    local data2 = hook.Run("ARC9_" .. val, self, data)
     if data2 ~= nil then
         data = data2
     end
@@ -312,7 +313,17 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
     end
 
     local valContCondition = val .. condition
-    if self.HasNoAffectors[valContCondition] then return stat end
+    if self.HasNoAffectors[valContCondition] then 
+        if condition == "" and quickmodifiers[val] and type(stat) == 'number' then
+            local convarvalue = quickmodifiers[val]:GetFloat()
+            if val == "MalfunctionMeanShotsToFail" then
+                stat = stat / math.max(0.00000001, convarvalue)
+            else
+                stat = stat * convarvalue
+            end
+        end
+        return stat 
+    end
 
     local unaffected = true
     
@@ -329,7 +340,7 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
             -- im leaving this as it is temporarily
             if hookstat ~= nil then cache = hookstat end
 
-            if quickmodifiers[val] and type(cache) == "number" then
+            if condition == "" and quickmodifiers[val] and type(cache) == "number" then
                 local convarvalue = quickmodifiers_values[val]
 
                 if val == "MalfunctionMeanShotsToFail" then -- dont kill me for this pls
@@ -357,15 +368,15 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
             local mod = elem[valContCondition]
             if mod == nil then continue end
 
-            -- if type(mod) == type(stat) then
-            if mod ~= nil then
-                if att_priority >= priority then
+            if att_priority >= priority then
+                -- if this is the base weapon and we passed a modified base, scale relative to base stat
+                if i == 1 and base ~= nil and condition ~= "" and type(stat) == "number" and type(elem[val]) == "number" and elem[val] ~= 0 then
+                    stat = base * (mod / elem[val])
+                else
                     stat = mod
-                    priority = att_priority
-                    unaffected = false
                 end
-            -- else
-            --     print("Invalid affector value: " .. valContCondition)
+                priority = att_priority
+                unaffected = false
             end
         end
     end
@@ -376,15 +387,12 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
         local mod = elem[keyName]
         local att_priority = elem[keyName .. "_Priority"] or 1
         
-        -- if type(mod) == type(stat) then
         if mod ~= nil then
             if att_priority >= priority then
                 stat = mod
                 priority = att_priority
                 unaffected = false
             end
-        -- else
-        --     print("Invalid affector value: " .. keyName)
         end
     end
 
@@ -396,8 +404,6 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
                 stat = stat + mod * amount
             
                 unaffected = false
-            -- else
-            --     print("Invalid affector value: " .. val .. "Add" .. condition)
             end
         end
 
@@ -405,18 +411,17 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
             local elem = allAffectors[i]
             local mod = elem[val .. "Mult" .. condition]
             if type(mod) == type(stat) then
-                stat = stat * (amount == 1 and mod or (mod ^ amount))
+                stat = stat * (amount == 1 and mod or (1 + (mod - 1) * amount))
 
                 unaffected = false
-            -- else
-            --     print("Invalid affector value: " .. val .. "Mult" .. condition)
             end
         end
     end
 
     if type(stat) == 'table' then stat.BaseClass = nil end -- ???
 
-    local hookstat, any = runHook(self, val .. "Hook" .. condition, stat) -- wtf is "any"
+    local preHookStat = stat
+    local hookstat, any = runHook(self, val .. "Hook" .. condition, stat)
     if hookstat ~= nil then stat = hookstat end
     if any then unaffected = false end
     local ughhh = not self.DynamicConditions[condition] and not donotcache
@@ -425,7 +430,7 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
         self.StatCache[baseContValContCondition] = stat
     end
 
-    if quickmodifiers[val] and type(stat) == 'number' then
+    if condition == "" and quickmodifiers[val] and type(stat) == 'number' then
         local convarvalue = quickmodifiers[val]:GetFloat()
 
         if val == "MalfunctionMeanShotsToFail" then  -- dont kill me for this pls
@@ -434,11 +439,11 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
             stat = stat * convarvalue
         end
 
-        unaffected = false
+        -- unaffected = false
     end
 
     if ughhh then
-        self.HasNoAffectors[valContCondition] = unaffected
+        self.StatCache[baseContValContCondition] = preHookStat
     end
 
     return stat
@@ -537,7 +542,7 @@ do
             --     stat = getValue(self, val, stat, "BlindFire")
             -- end
 
-            if not self.HasNoAffectors[val .. "Sights"] or not self.HasNoAffectors[val .. "HipFire"] then
+            if not self.HasNoAffectors[val .. "Sights"] or not self.HasNoAffectors[val .. "HipFire"] or not self.HasNoAffectors[val .. "Sighted"] then
                 local sightAmount = swepDt.SightAmount
 
                 if type(stat) == 'number' then
@@ -573,14 +578,16 @@ do
                         local hot = getValue(self, val, stat, "Hot")
 
                         if heatAmount >= cap then
-                            stat = getValue(self, val, stat, "Heated")
+                            local heated = getValue(self, val, stat, "Heated")
+                            stat = (heated == stat and hot ~= stat) and hot or heated
                         elseif hasHeat then
                             stat = Lerp(heatAmount / cap, stat, hot)
                         end
 
                     else
                         if heatAmount >= cap then
-                            stat = getValue(self, val, stat, "Heated")
+                            local heated = getValue(self, val, stat, "Heated")
+                            stat = (heated == stat and hot ~= stat) and hot or heated
                         elseif hasHeat then
                             stat = getValue(self, val, stat, "Hot")
                         end

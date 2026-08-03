@@ -1,7 +1,7 @@
 
 game.AddParticles( "particles/arc9_fas_muzzleflashes.pcf" )
 game.AddParticles( "particles/arc9_fas_explosions.pcf" )
---game.AddParticles( "particles/muzzleflashes_test_b.pcf" ) -- Why and What is this?
+game.AddParticles( "particles/arc9_muzzleflashes_test_b.pcf" ) -- Why and What is this? -- this was file containing mflashes for specific guns and by commenting it lots of guns started to have missing mflashes
 
 PrecacheParticleSystem( "muzzleflash_1" )
 PrecacheParticleSystem( "muzzleflash_2" )

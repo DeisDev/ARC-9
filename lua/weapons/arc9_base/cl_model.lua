@@ -584,7 +584,8 @@ function SWEP:SetupModel(wm, lod, cm)
                 fakestickwithoutnocull:Recompute()
             end
             
-            stickermodel:SetMaterial(stickermat)
+            -- stickermodel:SetMaterial(stickermat)
+            stickermodel:SetSubMaterial(0, stickermat)
 
             local tbl = {
                 Model = stickermodel,

@@ -123,7 +123,7 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
             local slottbl = model.slottbl
             local atttbl = self:GetFinalAttTable(slottbl)
 
-            if isDepthPass and atttbl.StickerMaterial then continue end
+            -- if isDepthPass and atttbl.StickerMaterial then continue end
 
 
             if !onground or model.OptimizPrevWMPos != getpos then -- mega optimiz

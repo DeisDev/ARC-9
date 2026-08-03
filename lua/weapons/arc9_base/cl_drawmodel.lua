@@ -22,7 +22,9 @@ end
 
 function SWEP:ShouldLOD()
     if self.IsStatue then return 0 end
-    if self:GetOwner() == LocalPlayer() then return 0 end
+    local owner, lp = self:GetOwner(), LocalPlayer()
+
+    if lp == owner then return -1 end
 
     if self:GetIsStatue() then
         self.IsStatue = true
@@ -33,8 +35,6 @@ function SWEP:ShouldLOD()
     if (self.NextLODCheck or 0) > ct then return self.LastLOD or 0 end
     self.NextLODCheck = ct + 0.5
 
-    local owner, lp = self:GetOwner(), LocalPlayer()
-    if lp == owner then return 0 end
 
     local result = 0
 

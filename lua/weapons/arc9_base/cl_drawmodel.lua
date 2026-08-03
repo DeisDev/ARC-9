@@ -22,6 +22,7 @@ end
 
 function SWEP:ShouldLOD()
     if self.IsStatue then return 0 end
+    if self:GetOwner() == LocalPlayer() then return 0 end
 
     if self:GetIsStatue() then
         self.IsStatue = true

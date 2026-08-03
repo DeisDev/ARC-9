@@ -1118,7 +1118,9 @@ function SWEP:ShootRocket()
     end
 
     if owner:IsNPC() then
-        spread = self:GetNPCBulletSpread()
+        -- spread = self:GetNPCBulletSpread()
+        -- spread = self:GetNPCSpread()
+        spread = 0.03
     else
         spread = swepGetProcessedValue(self, "Spread")
     end

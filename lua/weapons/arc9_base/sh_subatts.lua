@@ -115,6 +115,7 @@ function SWEP:BuildSubAttachmentTree(tbl, parenttbl)
             subatts[i].Bone = parenttbl.Bone
             local att_pos = parenttbl.Pos or Vector()
             local att_ang = parenttbl.Ang or Angle()
+            local scale = parenttbl.Scale or 1
 
             local og_addr = parenttbl.OriginalAddress
 
@@ -129,11 +130,11 @@ function SWEP:BuildSubAttachmentTree(tbl, parenttbl)
                     if mods[og_addr] then
                         att_pos = mods[og_addr].Pos or att_pos
                         att_ang = mods[og_addr].Ang or att_ang
+                        scale = mods[og_addr].Scale or scale
                     end
                 end
             end
 
-            local scale =  parenttbl.Scale or 1
 
             subatts[i].Scale = (subatts[i].Scale or 1) * scale
 

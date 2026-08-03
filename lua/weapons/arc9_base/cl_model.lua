@@ -295,9 +295,25 @@ function SWEP:CreateAttachmentModel(wm, atttbl, slottbl, ignorescale, cm, dupli,
         }
     end
 
+    local scalee = atttbl.Scale or 1
+    
+    if slottbl.OriginalAddress then
+        local eles = self:GetAttachmentElements()
+
+        for _, ele in ipairs(eles) do
+            local mods = ele.AttPosMods
+            if mods then
+                local mod_data = mods[slottbl.OriginalAddress]
+                if mod_data and mod_data.Scale then
+                    scalee = mod_data.Scale * scalee
+                end
+            end
+        end
+    end
+
     if !ignorescale then
         local scale = Matrix()
-        local vec = Vector(1, 1, 1) * (atttbl.Scale or 1)
+        local vec = Vector(1, 1, 1) * scalee
         if wm then
             vec = vec * (self.WorldModelOffset.Scale or 1)
         end

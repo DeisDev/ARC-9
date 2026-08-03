@@ -61,6 +61,7 @@ ARC9.WeaponClasses = {}
 function ARC9.PopulateWeaponClasses()
     for _, wep in ipairs(weapons.GetList()) do
         if weapons.IsBasedOn(wep.ClassName, "arc9_base") then
+            wep = weapons.Get(wep.ClassName)
             if wep.NotForNPCs then continue end
             if wep.AdminOnly then continue end
             local weptype = ARC9.GuessWeaponType(wep)

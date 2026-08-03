@@ -37,7 +37,7 @@ function ARC9.GiveNPCPlayerWeapon(npc, ply)
 
     local weapon = ply:GetActiveWeapon()
 
-    if !weapon.ARC9 then return end
+    if !weapon.ARC9 or weapon.NotForNPCs then return end
 
     npc:SetKeyValue("spawnflags", bit.band(npc:GetSpawnFlags(), bit.bnot(SF_NPC_NO_WEAPON_DROP))) -- "Some NPCs on some maps delete their weapons when the weapon is dropped, we don't want that."
     npc:DropWeapon(nil, ply:GetPos())

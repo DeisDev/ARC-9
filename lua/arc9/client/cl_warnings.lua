@@ -327,7 +327,7 @@ concommand.Add("arc9_dev_showwarnings", ARC9.DoCompatibilityCheck)
 
 hook.Add("InitPostEntity", "ARC9_CheckContent", function()
     for _, k in pairs(weapons.GetList()) do
-        if weapons.IsBasedOn(k.ClassName, "arc9_base") and k.ClassName != "arc9_base" and k.ClassName != "arc9_base_nade" then return end
+        if weapons.IsBasedOn(k.ClassName, "arc9_base") and k.ClassName != "arc9_base" and k.ClassName != "arc9_base_nade" and k.ClassName != "arc9_eft_base" then return end
     end
 
     chat.AddText(Color(255, 255, 255), "You have installed the ARC9 base but have no weapons installed. Search the workshop for some!")

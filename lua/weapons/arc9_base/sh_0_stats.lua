@@ -427,6 +427,8 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
     local ughhh = not self.DynamicConditions[condition] and not donotcache
 
     if ughhh then
+        self.HasNoAffectors[valContCondition] = unaffected
+        -- self.StatCache[baseContValContCondition] = preHookStat
         self.StatCache[baseContValContCondition] = stat
     end
 
@@ -438,8 +440,6 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
         else
             stat = stat * convarvalue
         end
-
-        -- unaffected = false
     end
 
     if ughhh then

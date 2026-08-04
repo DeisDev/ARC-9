@@ -5,11 +5,11 @@ ARC9.SWEPPatches = {
 }
 
 ARC9.SWEPStatPatches = {
-    ["VisualRecoilPunch"] = function(swep, orig)
-        if swep.UseVisualRecoil != false and isnumber(swep.VisualRecoilPunchHipFire) and isnumber(swep.VisualRecoilPunch) and swep.VisualRecoilPunch > swep.VisualRecoilPunchHipFire * 4 then
-            return math.min(swep.VisualRecoilPunchHipFire * 0.5, orig)
-        end
-    end
+    -- ["VisualRecoilPunch"] = function(swep, orig)
+    --     if swep.UseVisualRecoil != false and isnumber(swep.VisualRecoilPunchHipFire) and isnumber(swep.VisualRecoilPunch) and swep.VisualRecoilPunch > swep.VisualRecoilPunchHipFire * 4 then
+    --         return math.min(swep.VisualRecoilPunchHipFire * 0.5, orig)
+    --     end
+    -- end
 }
 
 function ARC9.AddSWEPPatch(tabl)
@@ -45,7 +45,7 @@ function ARC9.PatchWeapons()
         end
     end
 
-    if SERVER then print("[ARC9] Patched stats for " .. #patchedgunlist .. " weapons: " .. table.concat(patchedgunlist, ", ") .. ". If you are creator of them, please open `ARC9/lua/arc9/common/sh_patching` and see what has to be changed!") end
+    if SERVER then if #patchedgunlist > 0 then print("[ARC9] Patched stats for " .. #patchedgunlist .. " weapons: " .. table.concat(patchedgunlist, ", ") .. ". If you are creator of them, please open `ARC9/lua/arc9/common/sh_patching` and see what has to be changed!") end end
 end
 
 -- ARC9.PatchWeapons()

@@ -110,8 +110,7 @@ function SWEP:LoadPresetFromCode(str, standard)
         surface.PlaySound("arc9/preset_install.ogg")
     end
 
-    self:SavePreset(name, false, standard and name)
-
+    self:SavePreset(name, false, standard and name, table.Copy(self.Attachments))
 
     return name or true
 end
@@ -234,7 +233,7 @@ local cammat = GetRenderTarget("arc9_cammat_", pr_w, pr_h, false)
 
 SWEP.PresetCapture = nil
 
-function SWEP:SavePreset(presetname, nooverride, forcedname)
+function SWEP:SavePreset(presetname, nooverride, forcedname, capturetree)
     presetname = presetname or "autosave"
 
     local str = self:GeneratePresetExportCode()
@@ -260,7 +259,19 @@ function SWEP:SavePreset(presetname, nooverride, forcedname)
     f:Close()
 
     if presetname != "autosave" then
-        self:DoPresetCapture(filename)
+        timer.Simple(0.1, function()
+            if !IsValid(self) then return end
+
+            if !capturetree then
+                self:DoPresetCapture(filename)
+                return
+            else
+                self:BuildSubAttachments(capturetree)
+            end
+            
+            self:DoInvalidateCache()
+            self:DoPresetCapture(filename)
+        end)
     end
 end
 
@@ -280,6 +291,8 @@ local colormodifyicontabll = {
 }
 
 function SWEP:DoPresetCapture(filename, foricon)
+    if !IsValid(self) then return end
+
     local colorrr = arc9_killfeed_colour:GetBool()
 
     ARC9.PresetCam = true
@@ -538,6 +551,7 @@ function SWEP:CreateStandardPresets()
 
             if !self:LoadPresetFromCode(v, true) then print("Something gone wrong with standard preset!") continue end
 
+            self:DoInvalidateCache()
             newloaded = true
         end
 

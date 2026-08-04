@@ -1018,7 +1018,7 @@ local conVars = {
     },
     {
         name = "fx_adsblur_bleeding_amount",
-        default = "10",
+        default = "7",
         client = true
     },
 }

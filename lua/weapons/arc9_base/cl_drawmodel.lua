@@ -200,6 +200,9 @@ function SWEP:DrawCustomModel(wm, custompos, customang, flags)
                             self.RTScopeModel = model
                             if self.RTScope then atttbl.RTScopeNew_DisableShaderEyeOffset = true end
                             self.RTScopeAtttbl = atttbl
+                            if atttbl.RTScopeNew_BlurTexture then
+                                model.RTScope_BlurTexture = atttbl.RTScopeNew_BlurTexture
+                            end
                         end
                     elseif !wm and atttbl.RTScopeNew_BlurTexture then
                         model.RTScope_BlurTexture = atttbl.RTScopeNew_BlurTexture

@@ -160,6 +160,7 @@ function SWEP:PlayAnimation(anim, mult, lock, delayidle, noproxy, notranslate, n
     end
 
     if !noidle and !animation.NoIdle then
+        time = math.max(0.6, time)
         self:SetNextIdle(CurTime() + ((animation.DelayedIdle or (delayidle and !animation.InstantIdle)) and 0.325 or 0) + (time * mult))
     else
         self:SetNextIdle(math.huge)
@@ -297,6 +298,8 @@ function SWEP:Idle()
     if self:GetIsNearWall() then
         speed = math.huge
     end
+    
+    self:SetShouldHoldType()
 
     self:PlayAnimation(anim, speed)
 end

@@ -1054,6 +1054,9 @@ L["settings.server.quickstat.mod_malfunction.desc"] = "Multiply how likely it is
 L["settings.server.gameplay.mod_overheat.title"] = "Enable Overheating"
 L["settings.server.gameplay.mod_overheat.desc"] = "If the weapon supports it, it can overheat when firing too often, which could lead to a malfunction."
 
+L["settings.server.gameplay.mod_nearwall.title"] = "Enable Nearwalling"
+L["settings.server.gameplay.mod_nearwall.desc"] = "Enable Nearwalling"
+
 L["settings.server.gameplay.supermod.title"] = "Super Modifiers"
 L["settings.server.gameplay.supermod.desc"] = "Open a separate menu that allows you to apply any modifier on all weapons.\n\nWarning: Could cause weapons to no longer function if done incorrectly."
 

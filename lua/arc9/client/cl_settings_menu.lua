@@ -269,6 +269,7 @@ ARC9.SettingsTable = {
         { sv = true, type = "bool", text = "settings.server.gameplay.mod_peek.title", desc = "settings.server.gameplay.mod_peek.desc", convar = "mod_peek" },
         { type = "bool", text = "settings.gameplay.togglepeek.title", desc = "settings.gameplay.togglepeek.desc", convar = "togglepeek", parentconvar = "mod_peek" },
         { type = "bool", text = "settings.gameplay.togglepeek_reset.title", desc = "settings.gameplay.togglepeek_reset.desc", convar = "togglepeek_reset", parentconvar = "mod_peek", requireconvar = "togglepeek" },
+        { sv = true, type = "bool", text = "settings.server.gameplay.mod_nearwall.title", desc = "settings.server.gameplay.mod_nearwall.desc", convar = "mod_nearwall" },
 
         { sv = true, type = "bool", text = "settings.server.aimassist.enable.title", desc = "settings.server.aimassist.enable.desc", convar = "aimassist" },
         { type = "bool", text = "settings.aimassist.enable.title", desc = "settings.aimassist.enable.desc", convar = "aimassist_cl", parentconvar = "aimassist" },

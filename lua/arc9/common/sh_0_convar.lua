@@ -316,6 +316,11 @@ local conVars = {
         replicated = true
     },
     {
+        name = "mod_nearwall",
+        default = "1",
+        replicated = true
+    },
+    {
         name = "mod_peek",
         default = "1",
         replicated = true

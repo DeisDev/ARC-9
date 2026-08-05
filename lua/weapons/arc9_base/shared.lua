@@ -751,6 +751,7 @@ SWEP.MalfunctionMeanShotsToFail = 1000 -- The mean number of shots between malfu
 -- SWEP.Hook_GetShootEntData = function(self, table) return end -- Each function should add an entry to the table for shoot ents
 -- SWEP.HookP_NameChange = function(self, name) return name end
 -- SWEP.HookP_DescriptionChange = function(self, desc) return desc end
+-- SWEP.HookP_ClassChange = function(self, class) return class end
 -- SWEP.Hook_BlockAnimation = function(self, anim) return block end -- Return true to block animation from playing.
 -- SWEP.Hook_PrimaryAttack = function(self) return end -- Called when the primary attack is fired.
 -- SWEP.Hook_SwitchSight = function(self, newsight) return end -- Called when a sight is switched.

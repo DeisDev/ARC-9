@@ -124,10 +124,14 @@ function SWEP:PostModify(toggleonly)
 
     self.Description = base.Description
 
-    self.PrintName = self:RunHook("HookP_NameChange", self.PrintName)
-    self.Description = self:RunHook("HookP_DescriptionChange", self.Description)
-    self.Class = self:RunHook("HookP_ClassChange", self.Class)
-
+    timer.Simple(0, function()
+        if IsValid(self) then
+            self.PrintName = self:RunHook("HookP_NameChange", self.PrintName)
+            self.Description = self:RunHook("HookP_DescriptionChange", self.Description)
+            self.Class = self:RunHook("HookP_ClassChange", self.Class)
+        end
+    end)
+    
     if CLIENT then
         -- self:PruneAttachments()
         if !toggleonly then -- bruh

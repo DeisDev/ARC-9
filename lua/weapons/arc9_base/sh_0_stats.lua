@@ -542,19 +542,26 @@ do
             --     stat = getValue(self, val, stat, "BlindFire")
             -- end
 
-            if not self.HasNoAffectors[val .. "Sights"] or not self.HasNoAffectors[val .. "HipFire"] or not self.HasNoAffectors[val .. "Sighted"] then
+            local hasNoAffectors = self.HasNoAffectors
+            local sightedbruh = hasNoAffectors[val .. "Sighted"] -- what the fuck is Sighted when correct condition is Sights
+
+            if not hasNoAffectors[val .. "Sights"] or not hasNoAffectors[val .. "HipFire"] or !sightedbruh then
                 local sightAmount = swepDt.SightAmount
 
                 if type(stat) == 'number' then
-                    if sightAmount >= 1 and not self.HasNoAffectors[val .. "Sighted"] then
+                    if sightAmount >= 1 and sightedbruh then
                         stat = getValue(self, val, stat, "Sighted")
                     else
-                        stat = Lerp(sightAmount, getValue(self, val, stat, "HipFire"), getValue(self, val, stat, "Sights"))
-                    end
+                        local hipfire = getValue(self, val, stat, "HipFire")
+                        local sights = getValue(self, val, stat, "Sights")
 
+                        if isnumber(hipfire) and isnumber(sights) then
+                            stat = Lerp(sightAmount, hipfire, sights)
+                        end
+                    end
                 else
                     if sightAmount >= 1 then
-                        if not self.HasNoAffectors[val .. "Sighted"] then
+                        if !sightedbruh then
                             stat = getValue(self, val, stat, "Sighted")
                         else
                             stat = getValue(self, val, stat, "Sights")
@@ -565,7 +572,7 @@ do
                 end
             end
 
-            if not ARC9HeatCapacityGPVOverflow and (not self.HasNoAffectors[val .. "Hot"] or not self.HasNoAffectors[val .. "Heated"]) then
+            if not ARC9HeatCapacityGPVOverflow and (not hasNoAffectors[val .. "Hot"] or not hasNoAffectors[val .. "Heated"]) then
                 local heatAmount = swepDt.HeatAmount
                 local hasHeat = heatAmount > 0
 
@@ -596,7 +603,7 @@ do
             end
 
             local lastMeleeTime = swepDt.LastMeleeTime
-            if not self.HasNoAffectors[val .. "Melee"] and lastMeleeTime < curTime then
+            if not hasNoAffectors[val .. "Melee"] and lastMeleeTime < curTime then
                 local pft = curTime - lastMeleeTime
                 local d = pft / (getValue(self, "PreBashTime") + getValue(self, "PostBashTime"))
                 d = 1 - math.Clamp(d, 0, 1)
@@ -608,7 +615,7 @@ do
                 end
             end
 
-            if not self.HasNoAffectors[val .. "Shooting"] then
+            if not hasNoAffectors[val .. "Shooting"] then
                 local nextPrimaryFire = self:GetNextPrimaryFire()
 
                 if nextPrimaryFire + 0.1 > curTime then
@@ -623,7 +630,7 @@ do
                 end
             end
 
-            if val ~= "RecoilModifierCap" and not self.HasNoAffectors[val .. "Recoil"] then
+            if val ~= "RecoilModifierCap" and not hasNoAffectors[val .. "Recoil"] then
                 local recoilAmount = math.min(self:GetProcessedValue("RecoilModifierCap"), swepDt.RecoilAmount)
                 if recoilAmount > 0 then stat = getValue(self, val, stat, "Recoil", recoilAmount) end
             end
@@ -641,7 +648,7 @@ do
                 end
             end
 
-            if not self.HasNoAffectors[val .. "Move"] and isOwnerValid then
+            if not hasNoAffectors[val .. "Move"] and isOwnerValid then
                 local spd = self.PV_Move
                 local maxspd = owner:IsPlayer() and owner:GetWalkSpeed() or 250
 

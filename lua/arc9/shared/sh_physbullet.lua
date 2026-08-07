@@ -424,7 +424,11 @@ function ARC9:ProgressPhysBullet(bullet, timestep)
                     fireBullets.Src = oldpos
                     fireBullets.Dir = dir
                     fireBullets.Distance = spd + 16
-
+                    fireBullets.Callback = function(att, btr, dmg)
+                        if IsValid(weapon) then
+                            weapon:RunHook("Hook_PhysBulletImpact", {tr = btr, bullet = bullet})
+                        end
+                    end
                     fireBullets.IgnoreEntity = bullet.Attacker
 
                     attacker:FireBullets(fireBullets)

@@ -6,7 +6,7 @@ function SWEP:EnterSights()
     if self:GetSprintAmount() > 0.5 then return end
     if !self:GetProcessedValue("HasSights", true) then return end
     if self:GetCustomize() then return end
-    if !self:GetProcessedValue("ReloadInSights", true) and self:GetReloading() then return end
+    if !self:GetProcessedValue("ReloadInSights", true) and self:GetReloading() and self:GetAnimLockTime() > CurTime() then return end
     if self:GetHolsterTime() > 0 then return end
     if self:GetProcessedValue("UBGLInsteadOfSights", true) then return end
     if self:GetSafe() then return end

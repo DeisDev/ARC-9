@@ -610,7 +610,7 @@ function SWEP:ShootPhysBulletBinding(pos, ang, spread, bullettbl, numm)
         end
 
         for i = 1, numm do
-            local ang2 = ang
+            local ang2 = Angle(ang)
 
             -- trig stuff to ensure the spread is a circle of the right size
             local seed = i + self:EntIndex() + engine.TickCount()

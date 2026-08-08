@@ -17,7 +17,14 @@ function SWEP:ThinkCycle()
     -- local manual = self:ShouldManualCycle()
     local manual = owner:GetInfoNum("arc9_manualbolt", 0) >= 1
 
-    local cycling = manual and owner:KeyDown(IN_RELOAD) or !owner:KeyDown(IN_ATTACK)
+    local cycling
+
+    if !manual then
+        cycling = !owner:KeyDown(IN_ATTACK) 
+    else
+        cycling = owner:KeyDown(IN_RELOAD)
+    end
+
 
     if swepDt.NeedsCycle and (cycling or swepGetProcessedValue(self, "SlamFire", true)) then
         local iftp = IsFirstTimePredicted()

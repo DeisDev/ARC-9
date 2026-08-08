@@ -1,61 +1,3 @@
-
-local pistolammotypes = {
-    ["pistol"] = true,
-    ["357"] = true
-}
-
-local rpgammotypes = {
-    ["rpg_round"] = true,
-    ["smg1_grenade"] = true,
-    ["grenade"] = true
-}
-
-local sniperammotypes = {
-    ["SniperRound"] = true,
-    ["SniperPenetratedRound"] = true
-}
-
-function ARC9.GuessWeaponType(swep)
-    if swep.ARC9WeaponCategory then return swep.ARC9WeaponCategory end
-
-    if swep.NotAWeapon or swep.Throwable then
-        return ARC9.WEAPON_MISC
-    elseif swep.PrimaryBash then
-        return ARC9.WEAPON_MELEE
-    elseif swep.ShootEnt or rpgammotypes[swep.Ammo] then
-        return ARC9.WEAPON_RPG
-    elseif (swep.Num or 1) > 1 or swep.Ammo == "Buckshot" then
-        return ARC9.WEAPON_SHOTGUN
-    elseif sniperammotypes[swep.Ammo] then
-        return ARC9.WEAPON_SNIPER
-    end
-
-    local bestfiremode = 1
-
-    for _, mode in ipairs(swep.Firemodes or {}) do
-        if mode.Mode != 1 and mode.Mode != 0 then
-            bestfiremode = mode.Mode
-            break
-        end
-    end
-
-    if bestfiremode == 1 then
-        if pistolammotypes[swep.Ammo] then
-            return ARC9.WEAPON_PISTOL
-        else
-            return ARC9.WEAPON_SNIPER
-        end
-    else
-        if pistolammotypes[swep.Ammo] then
-            return ARC9.WEAPON_SMG
-        else
-            return ARC9.WEAPON_AR
-        end
-    end
-
-    return ARC9.WEAPON_MISC
-end
-
 ARC9.WeaponClasses = {}
 
 function ARC9.PopulateWeaponClasses()
@@ -102,11 +44,13 @@ function ARC9.ReplaceSpawnedWeapon(ent)
             end
 
             if !class then return end
+            local weptbl = ARC9.HL2Replacements[class]
+            if !weptbl then return end
+            local wepcategory = table.Random(weptbl)
 
-            if ARC9.HL2Replacements[class] then
-                local weptbl = ARC9.HL2Replacements[class]
-                local wepcategory = table.Random(weptbl)
-                local wepclass = table.Random(ARC9.GetWeaponClasses(wepcategory))
+            local avib = ARC9.GetWeaponListForHL2Gun(class, wepcategory)
+            if avib then
+                local wepclass = table.Random(avib)
 
                 if wepclass then
                     ent:Give(wepclass)
@@ -121,11 +65,14 @@ function ARC9.ReplaceSpawnedWeapon(ent)
             if ent.ARC9 then return end
 
             local class = ent:GetClass()
+            local weptbl = ARC9.HL2Replacements[class]
+            if !weptbl then return end
+            local wepcategory = table.Random(weptbl)
 
-            if ARC9.HL2Replacements[class] then
-                local weptbl = ARC9.HL2Replacements[class]
-                local wepcategory = table.Random(weptbl)
-                local wepclass = table.Random(ARC9.GetWeaponClasses(wepcategory))
+            local avib = ARC9.GetWeaponListForHL2Gun(class, wepcategory)
+            
+            if avib then
+                local wepclass = table.Random(avib)
 
                 if wepclass then
                     local wpnent = ents.Create(wepclass)

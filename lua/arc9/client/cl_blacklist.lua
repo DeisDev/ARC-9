@@ -248,8 +248,6 @@ function ARC9_BlacklistMenu()
     blacklistWindow.OnRemove = function() bg:Remove() end
     
     local cornercut = ARC9ScreenScale(3.5)
-    local buttontalling = 0
-    local talll = ARC9ScreenScale(50)
 
     blacklistWindow.Paint = function(self, w, h)
         draw.NoTexture()

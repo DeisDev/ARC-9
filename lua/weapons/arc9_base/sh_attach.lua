@@ -91,6 +91,14 @@ end
 SWEP.LastClipSize = 0
 SWEP.LastAmmo = ""
 
+local function updatehookp(self)
+    if IsValid(self) then
+        self.PrintName = self:RunHook("HookP_NameChange", self.PrintName)
+        self.Description = self:RunHook("HookP_DescriptionChange", self.Description)
+        self.Class = self:RunHook("HookP_ClassChange", self.Class)
+    end
+end
+
 function SWEP:PostModify(toggleonly)
     self:InvalidateCache()
 
@@ -123,14 +131,8 @@ function SWEP:PostModify(toggleonly)
     end
 
     self.Description = base.Description
-
-    timer.Simple(0, function()
-        if IsValid(self) then
-            self.PrintName = self:RunHook("HookP_NameChange", self.PrintName)
-            self.Description = self:RunHook("HookP_DescriptionChange", self.Description)
-            self.Class = self:RunHook("HookP_ClassChange", self.Class)
-        end
-    end)
+    updatehookp(self)
+    timer.Simple(0.1, function() updatehookp(self) end)
 
     if CLIENT then
         -- self:PruneAttachments()

@@ -590,6 +590,18 @@ if CLIENT then
     end
 end
 
+local function CalcSpreadDir(seed, ang, spread)
+    local ang2 = Angle(ang)
+
+    local a = util.SharedRandom("arc9_physbullet", 0, 360, seed)
+    local angleRand = Angle(math.sin(a), math.cos(a), 0)
+    angleRand:Mul(spread * util.SharedRandom("arc9_physbullet2", 0, 45, seed) * 1.4142135623730)
+
+    ang2:Add(angleRand)
+
+    return ang2:Forward()
+end
+
 local bulletPhysics = GetConVar("arc9_bullet_physics")
 local bulletPhysicsshotguns = GetConVar("arc9_bullet_physics_shotguns")
 local fireBullets = {}
@@ -610,17 +622,7 @@ function SWEP:ShootPhysBulletBinding(pos, ang, spread, bullettbl, numm)
         end
 
         for i = 1, numm do
-            local ang2 = Angle(ang)
-
-            -- trig stuff to ensure the spread is a circle of the right size
-            local seed = i + self:EntIndex() + engine.TickCount()
-            local a = util.SharedRandom("arc9_physbullet", 0, 360, seed)
-            local angleRand = Angle(math.sin(a), math.cos(a), 0)
-            angleRand:Mul(spread * util.SharedRandom("arc9_physbullet2", 0, 45, seed) * 1.4142135623730)
-
-            ang2:Add(angleRand)
-
-            local vec = ang2:Forward()
+            local vec = CalcSpreadDir(i + self:EntIndex() + engine.TickCount(), ang, spread)
             vec:Mul(swepGetProcessedValue(self, "PhysBulletMuzzleVelocity", true))
 
             ARC9:ShootPhysBullet(self, pos, vec, bullettbl, true)
@@ -690,32 +692,45 @@ function SWEP:DoProjectileAttack(pos, ang, spread)
                 fireBullets.Force = swepGetProcessedValue(self, "ImpactForce", true) / numm
                 fireBullets.Tracer = tr
                 fireBullets.TracerName = swepGetProcessedValue(self, "TracerEffect", true)
-                fireBullets.Num = numm
-                fireBullets.Dir = ang:Forward()
+                fireBullets.Num = 1 -- fuck this bitch source engine loops they SUCK
+                -- fireBullets.Dir = ang:Forward()
                 fireBullets.Src = pos
-                fireBullets.Spread = Vector(spread, spread, spread)
+                -- fireBullets.Spread = Vector(spread, spread, spread)
+                fireBullets.Spread = Vector()
                 fireBullets.HullSize = swepGetProcessedValue(self, "HullSize", true)
                 fireBullets.IgnoreEntity = veh
                 fireBullets.Distance = distance
+
+                -- local amount = 0
+                -- print("\nNEW ONE\n ")
+
                 fireBullets.Callback = function(att, btr, dmg)
                     rangecheck = true -- callback only called if bullet hits something
                     local range = distance * btr.Fraction
 
-                    dmg:SetDamage(swepGetProcessedValue(self, "DamageMax"))
+                    local dmgnumbr = swepGetProcessedValue(self, "DamageMax", true)
+                    dmg:SetDamage(dmgnumbr)
 
                     self.Penned = 0
                     self:AfterShotFunction(btr, dmg, range, swepGetProcessedValue(self, "Penetration", true), {})
-
+                    
                     -- if ARC9.Dev(2) then
                     --     if SERVER then
-                    --         debugoverlay.Cross(btr.HitPos, 4, 5, Color(255, 0, 0), false)
+                    --         amount = amount + 1
+                    --         debugoverlay.Cross(btr.HitPos, 1, 5, Color(255, 0, 0), false)
+                    --         debugoverlay.Text(btr.HitPos, "#" .. amount, 4, false)
+                    --         print("#" .. amount, dmgnumbr/numm)
                     --     else
                     --         debugoverlay.Cross(btr.HitPos, 4, 5, Color(255, 255, 255), false)
                     --     end
                     -- end
                 end
 
-                owner:FireBullets(fireBullets)
+                for i = 1, numm do
+                    fireBullets.Dir = CalcSpreadDir(i + self:EntIndex() + engine.TickCount(), ang, spread)
+
+                    owner:FireBullets(fireBullets)
+                end
 
                 if owner:IsPlayer() then
                     owner:LagCompensation(false)

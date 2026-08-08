@@ -104,7 +104,7 @@ function SWEP:NPC_Initialize()
 
     if CLIENT then return end
     
-    self.Primary.DefaultClip = self:GetProcessedValue("ClipSize")
+    self.Primary.DefaultClip = math.Round(self:GetProcessedValue("ClipSize"))
     self:SetClip1(self.ClipSize > 0 and math.max(1, self.Primary.DefaultClip) or self.Primary.DefaultClip)
 
     timer.Simple(0.1, function()

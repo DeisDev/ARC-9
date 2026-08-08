@@ -8,7 +8,7 @@ function SWEP:Attach(addr, att, silent)
         self.BottomBarAddress = nil
         self.BottomBarMode = 0
         self:CreateHUD_Bottom()
-        return false 
+        return false
     end
     if (slottbl.Installed == att) then return false end
     if !self:CanAttach(addr, att) then return false end
@@ -96,7 +96,7 @@ function SWEP:PostModify(toggleonly)
 
     self.AffectorsCache = nil -- fixes printnames being late
     self.ElementsCache = nil
-    
+
     if !toggleonly then
         self.ScrollLevels = {} -- moved from invalidcache
         self:CancelReload()
@@ -131,7 +131,7 @@ function SWEP:PostModify(toggleonly)
             self.Class = self:RunHook("HookP_ClassChange", self.Class)
         end
     end)
-    
+
     if CLIENT then
         -- self:PruneAttachments()
         if !toggleonly then -- bruh
@@ -144,7 +144,7 @@ function SWEP:PostModify(toggleonly)
             timer.Simple(0, function() self:KillFlashlights() end)
             self:CreateFlashlights()
         end
-        
+
         self:BuildMultiSight()
         self.InvalidateSelectIcon = true
     else
@@ -154,17 +154,16 @@ function SWEP:PostModify(toggleonly)
             end
 
             timer.Simple(0, function() -- PostModify gets called after each att attached
-                if (self.LastAmmo != self:GetValue("Ammo") or self.LastClipSize != self:GetValue("ClipSize")) and self.AlreadyGaveAmmo then
-						self:Unload(self.LastAmmo)
+                if (self.LastAmmo != self:GetValue("Ammo") or self.LastClipSize != math.Round(self:GetValue("ClipSize"))) and self.AlreadyGaveAmmo then
+                        self:Unload(self.LastAmmo)
                         self:SetRequestReload(true)
-				elseif !self.AlreadyGaveAmmo then
-                        
-						self:SetClip1(self:GetProcessedValue("ClipSize"))
+                elseif !self.AlreadyGaveAmmo then
+                        self:SetClip1(math.Round(self:GetProcessedValue("ClipSize")))
                         self.AlreadyGaveAmmo = true
-				end
-				
+                end
+
                 self.LastAmmo = self:GetValue("Ammo")
-                self.LastClipSize = self:GetValue("ClipSize")
+                self.LastClipSize = math.Round(self:GetProcessedValue("ClipSize"))
             end)
 
 
@@ -542,7 +541,7 @@ local arc9_atts_nocustomize = GetConVar("arc9_atts_nocustomize")
 
 function SWEP:WouldConflict(att, atttbl)
     local eles = { [att] = true }
-    
+
     if atttbl.ActivateElements then
         for _, ele in pairs(atttbl.ActivateElements) do
             eles[ele] = true
@@ -559,7 +558,7 @@ function SWEP:WouldConflict(att, atttbl)
             local req = istable(group) and group or {group}
 
             local conflict = true
-            
+
             for _, ele in ipairs(req) do
                 if !eles[ele] then
                     conflict = false

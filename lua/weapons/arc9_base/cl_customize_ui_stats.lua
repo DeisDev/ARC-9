@@ -180,7 +180,7 @@ function SWEP:CreateHUD_Stats()
             stat = "ClipSize",
             fifty = 20,
             eval = function()
-                local a = self:GetProcessedValue("ClipSize") + self:GetProcessedValue("ChamberSize")
+                local a = math.Round(self:GetProcessedValue("ClipSize")) + self:GetProcessedValue("ChamberSize")
                 if self:GetProcessedValue("BottomlessClip", true) then
                     a = a + math.huge
                 end
@@ -197,7 +197,7 @@ function SWEP:CreateHUD_Stats()
                 return self:GetProcessedValue("PrimaryBash", true) or self:GetProcessedValue("Throwable", true)
             end,
             conv = function(a)
-                a = tostring(a)
+                a = tostring(math.Round(a))
 
                 if self:GetProcessedValue("ChamberSize") > 0 then
                     a = a .. "+" .. tostring(self:GetProcessedValue("ChamberSize"))

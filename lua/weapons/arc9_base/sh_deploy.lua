@@ -140,7 +140,7 @@ function SWEP:InitialDefaultClip()
         if self.ForceDefaultAmmo then
             self:GetOwner():GiveAmmo(self.ForceDefaultAmmo, ammmmmo)
         else
-            self:GetOwner():GiveAmmo(self:GetValue("ClipSize") * GetConVar("arc9_mult_defaultammo"):GetInt(), ammmmmo)
+            self:GetOwner():GiveAmmo(math.Round(self:GetValue("ClipSize")) * GetConVar("arc9_mult_defaultammo"):GetInt(), ammmmmo)
         end
     end
 end

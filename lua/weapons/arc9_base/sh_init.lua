@@ -53,7 +53,7 @@ function SWEP:Initialize()
         end)
     end
 
-    self.LastClipSize = self:GetProcessedValue("ClipSize")
+    self.LastClipSize = math.Round(self:GetProcessedValue("ClipSize"))
     self.Primary.Ammo = self:GetProcessedValue("Ammo")
     self.LastAmmo = self.Primary.Ammo
 

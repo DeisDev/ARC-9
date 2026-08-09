@@ -729,7 +729,7 @@ function SWEP:ToggleStat(addr, val)
     val = val or 1
     local slottbl = self:LocateSlotFromAddress(addr)
 
-    if !slottbl.Installed then return end
+    if !slottbl or !slottbl.Installed then return end
 
     local atttbl = self:GetFinalAttTableFromAddress(addr)
 

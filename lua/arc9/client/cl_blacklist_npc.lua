@@ -247,7 +247,7 @@ function ARC9_NPCBlacklistMenu()
         srf.SetFont("ARC9_16")
         srf.SetTextColor(ARC9.GetHUDColor("fg"))
         srf.SetTextPos(ARC9ScreenScale(30), ARC9ScreenScale(4))
-        srf.DrawText(ARC9:GetPhrase("blacklistnpc.title") or "blacklistnpc.title")
+        srf.DrawText(ARC9:GetPhrase("blacklist.npc.title") or "blacklist.npc.title")
     end
 
     local close = vgui.Create("ARC9TopButton", blacklistWindow)
@@ -370,7 +370,7 @@ function ARC9_NPCBlacklistMenu()
                 if isEnabled then allunselected = false break end
             end
 
-            togglebtn:SetText(allunselected and (ARC9:GetPhrase("blacklist.select") or "SELECT ALL") or (ARC9:GetPhrase("blacklist.deselect") or "DESELECT ALL"))
+            togglebtn:SetText(allunselected and (ARC9:GetPhrase("blacklist.npc.select") or "SELECT ALL") or (ARC9:GetPhrase("blacklist.npc.deselect") or "DESELECT ALL"))
         end
     end
 
@@ -397,6 +397,35 @@ function ARC9_NPCBlacklistMenu()
             refreshWeaponList()
         end
     end
+    
+    local cvarsss = {
+        { ARC9:GetPhrase("settings.server.npc.npc_autoreplace.title") or "npc", "arc9_npc_autoreplace" },
+        { ARC9:GetPhrase("settings.server.npc.replace_spawned.title") or "ground", "arc9_replace_spawned" },
+    }
+    
+    for _, tabdata in ipairs(cvarsss) do
+        local wroof = vgui.Create("DButton", sidebar)
+        wroof:SetText(tabdata[1])
+        wroof:SetFont("ARC9_12")
+        wroof:SetHeight(ARC9ScreenScale(20))
+        wroof:Dock(BOTTOM)
+        wroof:DockMargin(ARC9ScreenScale(2), ARC9ScreenScale(2), ARC9ScreenScale(2), 0)
+
+        wroof.Paint = function(spaa, w, h)
+            local isSel = GetConVar(tabdata[2]):GetBool()
+            local hov = spaa:IsHovered()
+
+            srf.SetDrawColor(isSel and ARC9.GetHUDColor("hi") or hov and color_white or color_dtbl)
+            srf.DrawRect(0, 0, w, h)
+
+            spaa:SetTextColor(isSel and color_black or hov and color_black or color_white)
+        end
+
+        wroof.DoClick = function()
+            RunConsoleCommand(tabdata[2], GetConVar(tabdata[2]):GetBool() and 0 or 1)
+        end
+    end
+
 
     local FilterPanel = vgui.Create("DPanel", mainPanel)
     FilterPanel:Dock(TOP)
@@ -406,7 +435,7 @@ function ARC9_NPCBlacklistMenu()
 
     local guessbtn = vgui.Create("DButton", FilterPanel)
     guessbtn:SetFont("ARC9_8")
-    guessbtn:SetText(ARC9:GetPhrase("blacklist.reset") or "RESET")
+    guessbtn:SetText(ARC9:GetPhrase("blacklist.npc.reset") or "RESET")
     guessbtn:SetWide(ARC9ScreenScale(60))
     guessbtn:Dock(RIGHT)
     guessbtn:DockMargin(ARC9ScreenScale(2), 0, 0, 0)
@@ -425,7 +454,7 @@ function ARC9_NPCBlacklistMenu()
 
     togglebtn = vgui.Create("DButton", FilterPanel)
     togglebtn:SetFont("ARC9_8")
-    togglebtn:SetText(ARC9:GetPhrase("blacklist.deselect") or "DESELECT ALL")
+    togglebtn:SetText(ARC9:GetPhrase("blacklist.npc.deselect") or "DESELECT ALL")
     togglebtn:SetWide(ARC9ScreenScale(60))
     togglebtn:Dock(RIGHT)
     togglebtn:DockMargin(ARC9ScreenScale(2), 0, 0, 0)

@@ -343,6 +343,10 @@ L["blacklist.all"] = "ALL"
 L["blacklist.id"] = "ID"
 L["blacklist.name"] = "NAME"
 L["blacklist.filter"] = "FILTER"
+L["blacklist.npc.title"] = "ARC9 Weapon Replacer Manager"
+L["blacklist.npc.deselect"] = "DESELECT ALL"
+L["blacklist.npc.select"] = "SELECT ALL"
+L["blacklist.npc.reset"] = "RESET"
 
 ////////////////////// Incompatible addons
 L["incompatible.title"] = "ARC9: INCOMPATIBLE ADDONS"
@@ -978,6 +982,9 @@ L["settings.server.custmenu.atts_generateentities.desc"] = "Generate entities th
 ////////// NPC Settings
 L["settings.tabname.npc"] = "NPC Settings"
 L["settings.tabname.npc.desc"] = "Adjust settings for interaction with NPC's."
+
+L["settings.server.npc.blacklist.title"] = "Weapon Replacer Manager"
+L["settings.server.npc.blacklist.desc"] = "Opens a menu that allows excluding or including specific weapons from replacement pools for each HL2 weapon individually."
 
 L["settings.server.npc.npc_autoreplace.title"] = "Replace NPC Weapons"
 L["settings.server.npc.npc_autoreplace.desc"] = "NPC's that spawn with HL2 weapons will have them be replaced with ARC9 weapons."

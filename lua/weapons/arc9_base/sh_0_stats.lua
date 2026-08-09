@@ -363,6 +363,7 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
     if not self.ExcludeFromRawStats[val] then -- whatever tf this is
         for i = 1, affectorsCount do
             local elem = allAffectors[i]
+            if elem == nil then continue end
             local att_priority = elem[valContCondition .. "_Priority"] or 1
             
             local mod = elem[valContCondition]

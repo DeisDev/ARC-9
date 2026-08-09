@@ -250,7 +250,9 @@ function SWEP:PreDrawViewModel(vm, weapon, ply, flags)
 	if !isDepthPass then
     	vm:SetSubMaterial()
         if !self.VMMaterialAmount and vm:GetMaterials() then 
-            self.VMMaterialAmount = util.GetModelInfo(vm:GetModel()).MaterialCount
+            local getmdl = vm:GetModel()
+            if !getmdl or !util.GetModelInfo(getmdl) then return end
+            self.VMMaterialAmount = util.GetModelInfo(getmdl).MaterialCount
         end
 
     	for ind = 0, self.VMMaterialAmount or 31 do

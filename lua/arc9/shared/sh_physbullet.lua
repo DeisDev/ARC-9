@@ -424,11 +424,7 @@ function ARC9:ProgressPhysBullet(bullet, timestep)
                     fireBullets.Src = oldpos
                     fireBullets.Dir = dir
                     fireBullets.Distance = spd + 16
-                    fireBullets.Callback = function(att, btr, dmg)
-                        if IsValid(weapon) then
-                            weapon:RunHook("Hook_PhysBulletImpact", {tr = btr, bullet = bullet})
-                        end
-                    end
+
                     fireBullets.IgnoreEntity = bullet.Attacker
 
                     attacker:FireBullets(fireBullets)
@@ -455,6 +451,11 @@ function ARC9:ProgressPhysBullet(bullet, timestep)
                     end
                     SafeRemoveEntityDelayed(bullet.ClientModel, t)
                 end
+
+                if IsValid(weapon) then
+                    weapon:RunHook("Hook_PhysBulletImpact", {tr = tr, bullet = bullet})
+                end
+
                 bullet.Dead = true
             elseif SERVER then
                 bullet.Damaged[eid] = true

@@ -85,6 +85,7 @@ local function CreateWeaponButton(parent, wepClass, swepTbl, itemWidth, targetca
     wepBtn:SetFont("ARC9_8")
     wepBtn:SetText("")
     wepBtn:SetSize(itemWidth, ARC9ScreenScale(26))
+    wepBtn.wepClass = wepClass
 
     local guessedCatName, guessedGunType = GetGuessCatName(swepTbl)
     local isGuessedMatch = guessedGunType == targetcat
@@ -119,7 +120,7 @@ local function CreateWeaponButton(parent, wepClass, swepTbl, itemWidth, targetca
         srf.DrawTexturedRect(ARC9ScreenScale(2), ARC9ScreenScale(2), iconSize, iconSize)
 
         local txt = swepTbl.PrintName or wepClass
-        if internalName then txt = wepClass end
+        if internalName then txt = string.Replace(string.upper(wepClass), "ARC9_", "") end
         
         srf.SetTextColor(Bfg_col)
         srf.SetTextPos(ARC9ScreenScale(28), ARC9ScreenScale(3))
@@ -289,7 +290,9 @@ function ARC9_NPCBlacklistMenu()
 
     local sbar = wepList:GetVBar()
     sbar:SetWide(ARC9ScreenScale(15))
-    sbar.Paint = function() end
+    sbar.Paint = function(panel) 
+        panel:AddScroll(0)
+    end
     sbar.btnUp.Paint = function(span, w, h) end
     sbar.btnDown.Paint = function(span, w, h) end
     sbar.btnGrip.Paint = function(span, w, h)
@@ -302,6 +305,9 @@ function ARC9_NPCBlacklistMenu()
     wepGrid:SetSpaceX(ARC9ScreenScale(4))
     wepGrid:SetSpaceY(ARC9ScreenScale(4))
 
+    local togglebtn
+    local allunselected = false 
+
     local function refreshWeaponList()
         wepGrid:Clear()
         blacklistTbl[selectedHL2gun] = blacklistTbl[selectedHL2gun] or {}
@@ -311,10 +317,7 @@ function ARC9_NPCBlacklistMenu()
 
         local targetcat = ARC9.WEAPON_PISTOL
         for _, v in ipairs(hl2weapons) do
-            if v.class == selectedHL2gun then
-                targetcat = v.targetcat
-                break
-            end
+            if v.class == selectedHL2gun then targetcat = v.targetcat break end
         end
 
         local sortableWeps = {}
@@ -356,6 +359,19 @@ function ARC9_NPCBlacklistMenu()
         for _, data in ipairs(sortableWeps) do
             CreateWeaponButton(wepGrid, data.class, data.swep, itemWidth, targetcat)
         end
+
+        if togglebtn then
+            allunselected = true
+            for _, data in ipairs(sortableWeps) do
+                local override = blacklistTbl[selectedHL2gun] and blacklistTbl[selectedHL2gun][data.class]
+                local isEnabled = (data.isTarget == 0)
+                if override == "ex" then isEnabled = false end
+                if override == "in" then isEnabled = true end
+                if isEnabled then allunselected = false break end
+            end
+
+            togglebtn:SetText(allunselected and (ARC9:GetPhrase("blacklist.select") or "SELECT ALL") or (ARC9:GetPhrase("blacklist.deselect") or "DESELECT ALL"))
+        end
     end
 
     for _, tabdata in ipairs(hl2weapons) do
@@ -390,7 +406,7 @@ function ARC9_NPCBlacklistMenu()
 
     local guessbtn = vgui.Create("DButton", FilterPanel)
     guessbtn:SetFont("ARC9_8")
-    guessbtn:SetText(ARC9:GetPhrase("blacklist.selectguessed") or "SELECT GUESSED")
+    guessbtn:SetText(ARC9:GetPhrase("blacklist.reset") or "RESET")
     guessbtn:SetWide(ARC9ScreenScale(60))
     guessbtn:Dock(RIGHT)
     guessbtn:DockMargin(ARC9ScreenScale(2), 0, 0, 0)
@@ -404,6 +420,41 @@ function ARC9_NPCBlacklistMenu()
 
     guessbtn.DoClick = function()
         blacklistTbl[selectedHL2gun] = nil
+        refreshWeaponList()
+    end
+
+    togglebtn = vgui.Create("DButton", FilterPanel)
+    togglebtn:SetFont("ARC9_8")
+    togglebtn:SetText(ARC9:GetPhrase("blacklist.deselect") or "DESELECT ALL")
+    togglebtn:SetWide(ARC9ScreenScale(60))
+    togglebtn:Dock(RIGHT)
+    togglebtn:DockMargin(ARC9ScreenScale(2), 0, 0, 0)
+
+    togglebtn.Paint = function(spaa, w, h)
+        local hov = spaa:IsHovered()
+        srf.SetDrawColor(hov and color_bred or color_dtbl)
+        srf.DrawRect(0, 0, w, h)
+        spaa:SetTextColor(hov and color_white or color_white)
+    end
+
+    togglebtn.DoClick = function()
+        blacklistTbl[selectedHL2gun] = blacklistTbl[selectedHL2gun] or {}
+        
+        local targetcat = ARC9.WEAPON_PISTOL
+        for _, v in ipairs(hl2weapons) do
+            if v.class == selectedHL2gun then targetcat = v.targetcat break end
+        end
+
+        for _, swep in ipairs(wepGrid:GetChildren()) do
+            local isGuessedMatch = ARC9.GuessWeaponType(weapons.Get(swep.wepClass)) == targetcat
+            
+            if allunselected then
+                blacklistTbl[selectedHL2gun][swep.wepClass] = isGuessedMatch and nil or "in"
+            else
+                blacklistTbl[selectedHL2gun][swep.wepClass] = isGuessedMatch and "ex" or nil
+            end
+        end
+
         refreshWeaponList()
     end
 

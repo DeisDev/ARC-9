@@ -371,7 +371,7 @@ local function getValue(self, val, base, condition, amount, donotcache) -- preve
 
             if att_priority >= priority then
                 -- if this is the base weapon and we passed a modified base, scale relative to base stat
-                if i == 1 and base ~= nil and condition ~= "" and type(stat) == "number" and type(elem[val]) == "number" and elem[val] ~= 0 then
+                if i == 1 and base ~= nil and condition ~= "" and type(stat) == "number" and type(elem[val]) == "number" and elem[val] ~= 0 and type(mod) == "number" then
                     stat = base * (mod / elem[val])
                 else
                     stat = mod

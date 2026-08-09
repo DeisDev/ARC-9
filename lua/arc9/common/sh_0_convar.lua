@@ -1528,7 +1528,7 @@ local function menu_server_modifiers(panel)
         panel:ControlHelp( ARC9.GetPhrase and ARC9:GetPhrase("spawnmenu.supermod.examples") )
     else
         panel:ControlHelp( "Examples:" )
-        panel:ControlHelp( "∟ Overheat | true - Disables overheating" )
+        panel:ControlHelp( "∟ Overheat | false - Disables overheating" )
         panel:ControlHelp( "∟ BottomlessClip | true - Enables Bottomless Clip" )
         panel:ControlHelp( "∟ RecoilMultCrouch | 0.1 - Lowers recoil to 10% when crouching" )
         panel:ControlHelp( "∟ RPMMultOddShot | 0.5 - Every other shot shoots at half RPM" )

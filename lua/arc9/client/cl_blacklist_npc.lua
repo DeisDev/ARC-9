@@ -8,6 +8,12 @@ local hl2weapons = {
     { class = "weapon_shotgun",  name = "Shotgun",      targetcat = ARC9.WEAPON_SHOTGUN },
     { class = "weapon_crossbow", name = "Crossbow",     targetcat = ARC9.WEAPON_SNIPER },
     { class = "weapon_rpg",      name = "RPG Launcher", targetcat = ARC9.WEAPON_RPG },
+
+    { class = "weapon_frag",     name = "Frag Grenade", targetcat = false, sortcat = ARC9.WEAPON_FRAG },
+    { class = "weapon_crowbar",  name = "Crowbar",      targetcat = false, sortcat = ARC9.WEAPON_MELEE },
+    { class = "weapon_stunstick",  name = "Stunstick",  targetcat = false, sortcat = ARC9.WEAPON_MELEE },
+    { class = "weapon_slam",     name = "S.L.A.M.",     targetcat = false, sortcat = ARC9.WEAPON_FRAG },
+    { class = "weapon_bugbait",  name = "Bugbait",      targetcat = false, sortcat = ARC9.WEAPON_MISC },
 }
 
 local CategoryNames = {
@@ -16,7 +22,8 @@ local CategoryNames = {
     [ARC9.WEAPON_AR or 3]      = "Assault Rifle",
     [ARC9.WEAPON_SHOTGUN or 4] = "Shotgun",
     [ARC9.WEAPON_SNIPER or 5]  = "Sniper",
-    [ARC9.WEAPON_RPG or 6]     = "RPG / Explosive",
+    [ARC9.WEAPON_RPG or 6]     = "Explosive",
+    [ARC9.WEAPON_FRAG or 6]     = "Grenade",
     [ARC9.WEAPON_MELEE or 7]   = "Melee",
     [ARC9.WEAPON_MISC or 8]    = "Misc"
 }
@@ -316,17 +323,19 @@ function ARC9_NPCBlacklistMenu()
         local itemWidth = math.floor((availibwidth - ARC9ScreenScale(8)) / 3)
 
         local targetcat = ARC9.WEAPON_PISTOL
+        local sortcat = nil
         for _, v in ipairs(hl2weapons) do
-            if v.class == selectedHL2gun then targetcat = v.targetcat break end
+            if v.class == selectedHL2gun then targetcat = v.targetcat sortcat = v.sortcat break end
         end
 
         local sortableWeps = {}
         for _, swep in ipairs(weapons.GetList()) do
             if !weapons.IsBasedOn(swep.ClassName, "arc9_base") then continue end
             swep = weapons.Get(swep.ClassName)
-            if swep.NotForNPCs or swep.NotAWeapon or !swep.Spawnable or swep.AdminOnly then continue end
+            -- if swep.NotForNPCs or swep.NotAWeapon or !swep.Spawnable or swep.AdminOnly then continue end
+            if swep.NotAWeapon or !swep.Spawnable or swep.AdminOnly then continue end
 
-            local weptype = swep.ARC9WeaponCategory
+            local weptype = swep.ARC9WeaponCategory or ARC9.WEAPON_MISC
             local isBlacklisted = false
             local override = blacklistTbl[selectedHL2gun][swep.ClassName]
             if override == "ex" then isBlacklisted = true end
@@ -342,7 +351,7 @@ function ARC9_NPCBlacklistMenu()
                 swep = swep,
                 class = swep.ClassName,
                 cat = weptype,
-                isTarget = (weptype == targetcat) and 0 or 1
+                isTarget = (weptype == (sortcat or targetcat)) and 0 or 1
             })
         end
 

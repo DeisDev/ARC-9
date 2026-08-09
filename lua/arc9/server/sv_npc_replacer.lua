@@ -13,6 +13,7 @@ function ARC9.ReplaceSpawnedWeapon(ent)
 
     if ent:IsNPC() then
         if !arc9_npc_autoreplace:GetBool() then return end
+
         timer.Simple(fuckingtimer, function()
             if !ent:IsValid() then return end
             local cap = ent:CapabilitiesGet()
@@ -34,12 +35,14 @@ function ARC9.ReplaceSpawnedWeapon(ent)
         end)
     elseif ent:IsWeapon() then
         if !arc9_replace_spawned:GetBool() then return end
+        local class = ent:GetClass()
+        if !ARC9.HL2Replacements[class] then return end
+
         timer.Simple(fuckingtimer, function()
             if !ent:IsValid() then return end
             if IsValid(ent:GetOwner()) then return end
             if ent.ARC9 then return end
 
-            local class = ent:GetClass()
             local weptbl = ARC9.HL2Replacements[class]
             if !weptbl then return end
             local wepcategory = weptbl[math.random(#weptbl)]

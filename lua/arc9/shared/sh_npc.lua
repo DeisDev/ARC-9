@@ -58,7 +58,9 @@ local classtotype_direct = {
     ["csgo_class_weapon_sniper"]    = ARC9.WEAPON_SNIPER,
     ["csgo_class_weapon_special"]   = ARC9.WEAPON_MISC,
     ["csgo_class_weapon_explosive"] = ARC9.WEAPON_RPG,
-    ["csgo_class_weapon_grenade"]   = ARC9.WEAPON_RPG,
+    ["csgo_class_weapon_grenade"]   = ARC9.WEAPON_FRAG,
+    ["csgo_class_weapon_proximity"]   = ARC9.WEAPON_FRAG,
+    ["csgo_class_weapon_pistols"]   = ARC9.WEAPON_PISTOL,
     
     ["eft_class_weapon_carb"]       = ARC9.WEAPON_AR,
     ["eft_class_weapon_lmg"]        = ARC9.WEAPON_AR,
@@ -77,11 +79,16 @@ local classtotype_direct = {
     ["eft_class_weapon_melee"]      = ARC9.WEAPON_MELEE,
     ["eft_class_weapon_grenadelauncher"] = ARC9.WEAPON_RPG,
     ["eft_class_weapon_toy"]        = ARC9.WEAPON_MISC,
+    ["eft_class_weapon_smoke"]      = ARC9.WEAPON_FRAG,
+    ["eft_class_weapon_stun"]       = ARC9.WEAPON_FRAG,
+    ["eft_class_weapon_flashbang"]  = ARC9.WEAPON_FRAG,
     
     ["mw19_class_weapon_ar"]        = ARC9.WEAPON_AR,
     ["mw19_class_weapon_launcher"]  = ARC9.WEAPON_RPG,
     ["mw19_class_weapon_marksman"]  = ARC9.WEAPON_SNIPER,
     ["mw19_class_weapon_sniper"]    = ARC9.WEAPON_SNIPER,
+    ["mw19_class_weapon_lethal"]    = ARC9.WEAPON_FRAG,
+    ["mw19_class_weapon_melee"]     = ARC9.WEAPON_MELEE,
     
     ["smorg_class_weapon_ar"]       = ARC9.WEAPON_AR,
     ["smorg_class_weapon_br"]       = ARC9.WEAPON_AR,
@@ -118,14 +125,18 @@ local classtotype_find = {
     ["battle"]      = ARC9.WEAPON_AR,
     ["rifle"]       = ARC9.WEAPON_AR,
     ["launcher"]    = ARC9.WEAPON_RPG,
-    ["mine"]        = ARC9.WEAPON_RPG,
-    ["grenade"]        = ARC9.WEAPON_RPG,
+    ["mine"]        = ARC9.WEAPON_FRAG,
+    ["grenade"]     = ARC9.WEAPON_FRAG,
+    ["_gren"]       = ARC9.WEAPON_FRAG,
+    ["throw"]       = ARC9.WEAPON_FRAG,
+    ["tactical"]    = ARC9.WEAPON_FRAG,
     ["smg"]         = ARC9.WEAPON_SMG,
     ["shotgun"]     = ARC9.WEAPON_SHOTGUN,
     ["marksman"]    = ARC9.WEAPON_SNIPER,
     ["bolt"]        = ARC9.WEAPON_SNIPER,
     ["knife"]       = ARC9.WEAPON_MELEE,
     ["blade"]       = ARC9.WEAPON_MELEE,
+    ["melee"]       = ARC9.WEAPON_MELEE,
     ["wonder"]      = ARC9.WEAPON_MISC,
 }
 
@@ -136,7 +147,7 @@ function ARC9.GuessWeaponTypeByClass(raw)
 
     local lowerr = string.lower(raw)
     for needle, probtype in pairs(classtotype_find) do
-        if string.find(lowerr, needle, 1, true) then
+        if string.find(lowerr, needle, 0, true) then
             classtotype_direct[raw] = probtype
             return probtype
         end
@@ -155,7 +166,8 @@ function ARC9.PopulateWeaponClasses()
         local class = swep.ClassName
         if !weapons.IsBasedOn(class, "arc9_base") then continue end
         swep = weapons.Get(class)
-        if swep.NotForNPCs or swep.NotAWeapon or !swep.Spawnable or swep.AdminOnly then continue end
+        -- if swep.NotForNPCs or swep.NotAWeapon or !swep.Spawnable or swep.AdminOnly then continue end
+        if swep.NotAWeapon or !swep.Spawnable or swep.AdminOnly then continue end
 
         local weptype = ARC9.WEAPON_MISC
 
@@ -164,7 +176,7 @@ function ARC9.PopulateWeaponClasses()
             weapons.GetStored(class).ARC9WeaponCategory = weptype
         end
         
-        ARC9.SpawnableWeapons[class] = weptype
+        ARC9.SpawnableWeapons[class] = swep.ARC9WeaponCategory or weptype
         ARC9.WeaponClasses[weptype] = ARC9.WeaponClasses[weptype] or {}
         table.insert(ARC9.WeaponClasses[weptype], class)
     end

@@ -247,9 +247,9 @@ function SWEP:PreDrawViewModel(vm, weapon, ply, flags)
 
 	self.RenderingRTScope = false 
 
-	if !isDepthPass then
+	if !isDepthPass and IsValid(vm) then
     	vm:SetSubMaterial()
-        if !self.VMMaterialAmount and vm:GetMaterials() then 
+        if !self.VMMaterialAmount and vm:GetMaterials() then
             local getmdl = vm:GetModel()
             if !getmdl or !util.GetModelInfo(getmdl) then return end
             self.VMMaterialAmount = util.GetModelInfo(getmdl).MaterialCount
@@ -549,7 +549,7 @@ function SWEP:PostDrawViewModel(vm, weapon, ply, flags)
     end
 
     self.RenderingHolosight = false
-    cam.Start3D(nil, nil, self:WidescreenFix(self:GetViewModelFOV()), nil, nil, nil, nil, 1, 10000)
+    cam.Start3D(nil, nil, self:WidescreenFix(self.GetViewModelFOV and self:GetViewModelFOV() or 90), nil, nil, nil, nil, 1, 10000)
     if self.VModel then
         for _, model in ipairs(self.VModel) do
             local atttbl = model.atttbl or model.slottbl:GetFinalAttTable(slottbl)

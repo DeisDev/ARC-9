@@ -149,6 +149,52 @@ function ARC9.GetWeaponClasses(weptype)
     return wepclasses
 end
 
+
+util.AddNetworkString("arc9_sendnpcblacklist")
+util.AddNetworkString("arc9_syncnpcblacklist")
+local filenamee = "arc9_npc_blacklist.json"
+
+if file.Exists(filenamee, "DATA") then
+    local rawData = file.Read(filenamee, "DATA")
+    if rawData then
+        ARC9.NPCBlacklist = util.JSONToTable(rawData) or {}
+    end
+end
+
+net.Receive("arc9_sendnpcblacklist", function(len, ply)
+    if IsValid(ply) and !ply:IsAdmin() then return end
+
+    local length = net.ReadUInt(32)
+    local data = net.ReadData(length)
+    local decomp = util.Decompress(data)
+
+    if decomp and #decomp > 0 then
+        ARC9.NPCBlacklist = util.JSONToTable(decomp) or {}
+
+        file.Write(filenamee, util.TableToJSON(ARC9.NPCBlacklist, true))
+
+        local json = util.TableToJSON(ARC9.NPCBlacklist)
+        local comp = util.Compress(json)
+
+        net.Start("arc9_syncnpcblacklist")
+        net.WriteUInt(#comp, 32)
+        net.WriteData(comp, #comp)
+        net.Broadcast()
+    end
+end)
+
+
+hook.Add("PlayerInitialSpawn", "ARC9_PlayerInitialSpawn_SendNPCBlacklist", function(ply)
+    -- npc blacklist
+    local json = util.TableToJSON(ARC9.NPCBlacklist or {})
+    local comp = util.Compress(json)
+
+    net.Start("arc9_syncnpcblacklist")
+    net.WriteUInt(#comp, 32)
+    net.WriteData(comp, #comp)
+    net.Send(ply)
+end)
+
 -- wep giver, not replacer
 
 local arc9_npc_give_weapons = GetConVar("arc9_npc_give_weapons")

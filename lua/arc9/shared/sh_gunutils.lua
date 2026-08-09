@@ -74,3 +74,50 @@ timer.Simple(10, function() -- tfa does same thing, no need to copy (timer here 
         end)
     end
 end)
+
+hook.Add("AllowPlayerPickup", "ARC9_AllowPlayerPickup", function(ply, ent)
+    local wep = ply:GetActiveWeapon()
+    if !wep.ARC9 then return end
+
+    if wep:GetBipod() then return false end
+end)
+
+properties.Add( "weapon_arc9_statueify", {
+    MenuLabel = "Toggle Weapon Statue",
+    Order = 6969,
+    MenuIcon = "icon16/control_stop.png",
+
+    Filter = function( self, ent, ply )
+
+        if !ent.ARC9 then return false end
+
+        return true
+
+    end,
+
+    Action = function( self, ent )
+
+        self:MsgStart()
+            net.WriteEntity( ent )
+        self:MsgEnd()
+
+    end,
+
+    Receive = function( self, length, ply )
+
+        local ent = net.ReadEntity()
+        if ( !properties.CanBeTargeted( ent, ply ) ) then return end
+        if ( !self:Filter( ent, ply ) ) then return end
+
+        ent.IsStatue = !ent.IsStatue
+        ent:SetIsStatue( ent.IsStatue )
+
+    end
+
+} )
+
+hook.Add("PlayerCanPickupWeapon", "ARC9_PlayerCanPickupWeapon_Statue", function(ply, wep)
+    if wep.ARC9 and wep.IsStatue then
+        return false
+    end
+end)

@@ -61,6 +61,7 @@ local color_lred = Color(125, 25, 25, 150)
 local color_dred = Color(75, 0, 0, 150)
 local color_dtbl = Color(0, 0, 0, 200)
 local color_guessed = Color(70, 150, 230, 255)
+local color_notnpc = Color(46, 41, 6, 200)
 
 local arc9_hud_scale = GetConVar("arc9_hud_scale")
 if !ARC9.ScreenScale then ARC9.ScreenScale = function(size) return size * (ScrW() / 640) * arc9_hud_scale:GetFloat() * 0.9 end end -- idk
@@ -93,9 +94,10 @@ local function CreateWeaponButton(parent, wepClass, swepTbl, itemWidth, targetca
     wepBtn:SetText("")
     wepBtn:SetSize(itemWidth, ARC9ScreenScale(26))
     wepBtn.wepClass = wepClass
+    wepBtn.notForNPCs = swepTbl.NotForNPCs
 
     local guessedCatName, guessedGunType = GetGuessCatName(swepTbl)
-    local isGuessedMatch = guessedGunType == targetcat
+    local isGuessedMatch = (guessedGunType == targetcat) and !swepTbl.NotForNPCs
 
     local matPath = swepTbl.IconOverride or ("entities/" .. (swepTbl.ClassName or "ahmad") .. ".png")
     local iconMat = Material(matPath, "mips smooth")
@@ -118,6 +120,10 @@ local function CreateWeaponButton(parent, wepClass, swepTbl, itemWidth, targetca
         local Bfg_col = blackhov and color_bred or blisted and color_bred or hovered and color_black or color_white
         local Bbg_col = blackhov and color_lred or blisted and color_dred or hovered and color_white or color_dtbl
 
+        if spaa.notForNPCs and Bbg_col == color_dtbl then
+            Bbg_col = color_notnpc
+        end
+
         srf.SetDrawColor(Bbg_col)
         srf.DrawRect(0, 0, w, h)
 
@@ -137,10 +143,9 @@ local function CreateWeaponButton(parent, wepClass, swepTbl, itemWidth, targetca
         srf.SetTextColor(hovered and color_black or color_guessed)
         srf.SetFont("ARC9_10")
         srf.SetTextPos(ARC9ScreenScale(28), ARC9ScreenScale(14))
-        srf.DrawText(guessedCatName)
+        srf.DrawText(guessedCatName .. (spaa.notForNPCs and " (NPC can't use)" or ""))
     end
 
-    -- In addition to clicking on a button, you can drag over all of them! -- this not work correctly!!!!!!!!!!!!!!!!!!!
     wepBtn.OnMousePressed = function(spaa, kc)
         local currentOverride = blacklistTbl[selectedHL2gun] and blacklistTbl[selectedHL2gun][wepClass]
         local currentEnabled = isGuessedMatch
@@ -340,7 +345,7 @@ function ARC9_NPCBlacklistMenu()
             local override = blacklistTbl[selectedHL2gun][swep.ClassName]
             if override == "ex" then isBlacklisted = true end
             if override == "in" then isBlacklisted = false end
-            if override == nil then isBlacklisted = (weptype != targetcat) end
+            if override == nil then isBlacklisted = (weptype != targetcat) or (swep.NotForNPCs == true) end
             if onlyblacklisted and !isBlacklisted then continue end
 
             if filter != "" and !(string.find((swep.PrintName or swep.ClassName):lower(), filter) or string.find(swep.ClassName:lower(), filter)) then
@@ -351,12 +356,15 @@ function ARC9_NPCBlacklistMenu()
                 swep = swep,
                 class = swep.ClassName,
                 cat = weptype,
-                isTarget = (weptype == (sortcat or targetcat)) and 0 or 1
+                isTarget = (weptype == (sortcat or targetcat)) and 0 or 1,
+                notForNPC = swep.NotForNPCs and 1 or 0
             })
         end
 
         table.sort(sortableWeps, function(a, b) -- gross
-            if a.isTarget != b.isTarget then
+            if a.notForNPC != b.notForNPC then
+                return a.notForNPC < b.notForNPC
+            elseif a.isTarget != b.isTarget then
                 return a.isTarget < b.isTarget
             elseif a.cat != b.cat then
                 return a.cat < b.cat
@@ -373,7 +381,7 @@ function ARC9_NPCBlacklistMenu()
             allunselected = true
             for _, data in ipairs(sortableWeps) do
                 local override = blacklistTbl[selectedHL2gun] and blacklistTbl[selectedHL2gun][data.class]
-                local isEnabled = (data.isTarget == 0)
+                local isEnabled = (data.isTarget == 0) and !data.swep.NotForNPCs
                 if override == "ex" then isEnabled = false end
                 if override == "in" then isEnabled = true end
                 if isEnabled then allunselected = false break end
@@ -484,7 +492,8 @@ function ARC9_NPCBlacklistMenu()
         end
 
         for _, swep in ipairs(wepGrid:GetChildren()) do
-            local isGuessedMatch = weapons.Get(swep.wepClass).ARC9WeaponCategory == targetcat
+            local sweptbl = weapons.Get(swep.wepClass)
+            local isGuessedMatch = (sweptbl.ARC9WeaponCategory == targetcat) and !sweptbl.NotForNPCs
             
             if allunselected then
                 blacklistTbl[selectedHL2gun][swep.wepClass] = isGuessedMatch and nil or "in"

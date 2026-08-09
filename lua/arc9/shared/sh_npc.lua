@@ -19,26 +19,34 @@ ARC9.SpawnableWeapons = ARC9.SpawnableWeapons or {}
 ARC9.WeaponClasses = ARC9.WeaponClasses or {}
 ARC9.CachedHL2WepReplacements = ARC9.CachedHL2WepReplacements or {}
 
-function ARC9.GetWeaponListForHL2Gun(hl2class, weptype)
+function ARC9.GetWeaponListForHL2Gun(hl2class, weptype, fornpc)
     ARC9.CachedHL2WepReplacements[hl2class] = ARC9.CachedHL2WepReplacements[hl2class] or {}
+    ARC9.CachedHL2WepReplacements[hl2class][weptype] = ARC9.CachedHL2WepReplacements[hl2class][weptype] or {}
     
-    if ARC9.CachedHL2WepReplacements[hl2class][weptype] then
-        return ARC9.CachedHL2WepReplacements[hl2class][weptype]
+    local poolKey = fornpc and "npc" or "ground"
+    if ARC9.CachedHL2WepReplacements[hl2class][weptype][poolKey] then
+        return ARC9.CachedHL2WepReplacements[hl2class][weptype][poolKey]
     end
 
     local wepclasses = {}
     local overrides = ARC9.NPCBlacklist and ARC9.NPCBlacklist[hl2class] or {}
     
     for class, wtype in pairs(ARC9.SpawnableWeapons) do
+        local sweptbl = weapons.Get(class)
+        local isNotForNPCs = sweptbl and sweptbl.NotForNPCs or false
+
+        if fornpc and isNotForNPCs then continue end
+
         local override = overrides[class]
         
-        local allowed = (wtype == weptype) or (override == "in")
+        local defaultAllowed = (wtype == weptype) and !isNotForNPCs
+        local allowed = defaultAllowed or (override == "in")
         if override == "ex" then allowed = false end
         
         if allowed then table.insert(wepclasses, class) end
     end
     
-    ARC9.CachedHL2WepReplacements[hl2class][weptype] = wepclasses
+    ARC9.CachedHL2WepReplacements[hl2class][weptype][poolKey] = wepclasses
     return wepclasses
 end
 

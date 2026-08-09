@@ -27,7 +27,7 @@ function ARC9.ReplaceSpawnedWeapon(ent)
             if !weptbl then return end
             local wepcategory = weptbl[math.random(#weptbl)]
 
-            local avib = ARC9.GetWeaponListForHL2Gun(class, wepcategory)
+            local avib = ARC9.GetWeaponListForHL2Gun(class, wepcategory, true)
             
             if avib and #avib > 0 then
                 ent:Give(avib[math.random(#avib)])
@@ -47,7 +47,7 @@ function ARC9.ReplaceSpawnedWeapon(ent)
             if !weptbl then return end
             local wepcategory = weptbl[math.random(#weptbl)]
 
-            local avib = ARC9.GetWeaponListForHL2Gun(class, wepcategory)
+            local avib = ARC9.GetWeaponListForHL2Gun(class, wepcategory, false)
             
             if avib and #avib > 0 then
                 local wepclass = avib[math.random(#avib)]

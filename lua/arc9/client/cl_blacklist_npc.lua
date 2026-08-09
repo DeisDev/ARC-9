@@ -16,13 +16,13 @@ local CategoryNames = {
     [ARC9.WEAPON_AR or 3]      = "Assault Rifle",
     [ARC9.WEAPON_SHOTGUN or 4] = "Shotgun",
     [ARC9.WEAPON_SNIPER or 5]  = "Sniper",
-    [ARC9.WEAPON_RPG or 6]     = "RPG",
+    [ARC9.WEAPON_RPG or 6]     = "RPG / Explosive",
     [ARC9.WEAPON_MELEE or 7]   = "Melee",
     [ARC9.WEAPON_MISC or 8]    = "Misc"
 }
 
 local function GetGuessCatName(swepTbl)
-    local weptype = ARC9.GuessWeaponType(swepTbl)
+    local weptype = swepTbl.ARC9WeaponCategory
     return CategoryNames[weptype] or "Misc", weptype
 end
 
@@ -130,7 +130,7 @@ local function CreateWeaponButton(parent, wepClass, swepTbl, itemWidth, targetca
         srf.SetTextColor(hovered and color_black or color_guessed)
         srf.SetFont("ARC9_10")
         srf.SetTextPos(ARC9ScreenScale(28), ARC9ScreenScale(14))
-        srf.DrawText("[?] " .. guessedCatName)
+        srf.DrawText(guessedCatName)
     end
 
     -- In addition to clicking on a button, you can drag over all of them! -- this not work correctly!!!!!!!!!!!!!!!!!!!
@@ -326,7 +326,7 @@ function ARC9_NPCBlacklistMenu()
             swep = weapons.Get(swep.ClassName)
             if swep.NotForNPCs or swep.NotAWeapon or !swep.Spawnable or swep.AdminOnly then continue end
 
-            local weptype = ARC9.GuessWeaponType(swep)
+            local weptype = swep.ARC9WeaponCategory
             local isBlacklisted = false
             local override = blacklistTbl[selectedHL2gun][swep.ClassName]
             if override == "ex" then isBlacklisted = true end
@@ -475,7 +475,7 @@ function ARC9_NPCBlacklistMenu()
         end
 
         for _, swep in ipairs(wepGrid:GetChildren()) do
-            local isGuessedMatch = ARC9.GuessWeaponType(weapons.Get(swep.wepClass)) == targetcat
+            local isGuessedMatch = weapons.Get(swep.wepClass).ARC9WeaponCategory == targetcat
             
             if allunselected then
                 blacklistTbl[selectedHL2gun][swep.wepClass] = isGuessedMatch and nil or "in"

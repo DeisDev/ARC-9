@@ -1,31 +1,31 @@
 ARC9.NPCBlacklist = ARC9.NPCBlacklist or {}
 
 local hl2weapons = {
-    { class = "weapon_pistol",   name = "9mm Pistol",   targetcat = ARC9.WEAPON_PISTOL },
-    { class = "weapon_357",      name = ".357 Magnum",  targetcat = ARC9.WEAPON_PISTOL },
-    { class = "weapon_smg1",     name = "SMG",          targetcat = ARC9.WEAPON_SMG },
-    { class = "weapon_ar2",      name = "Pulse-Rifle",  targetcat = ARC9.WEAPON_AR },
-    { class = "weapon_shotgun",  name = "Shotgun",      targetcat = ARC9.WEAPON_SHOTGUN },
-    { class = "weapon_crossbow", name = "Crossbow",     targetcat = ARC9.WEAPON_SNIPER },
-    { class = "weapon_rpg",      name = "RPG Launcher", targetcat = ARC9.WEAPON_RPG },
+    { class = "weapon_pistol",   name = "#weapon_pistol",   targetcat = ARC9.WEAPON_PISTOL },
+    { class = "weapon_357",      name = "#weapon_357",      targetcat = ARC9.WEAPON_PISTOL },
+    { class = "weapon_smg1",     name = "#weapon_smg1",     targetcat = ARC9.WEAPON_SMG },
+    { class = "weapon_ar2",      name = "#weapon_ar2",      targetcat = ARC9.WEAPON_AR },
+    { class = "weapon_shotgun",  name = "#weapon_shotgun",  targetcat = ARC9.WEAPON_SHOTGUN },
+    { class = "weapon_crossbow", name = "#weapon_crossbow", targetcat = ARC9.WEAPON_SNIPER },
+    { class = "weapon_rpg",      name = "#weapon_rpg",      targetcat = ARC9.WEAPON_RPG },
 
-    { class = "weapon_frag",     name = "Frag Grenade", targetcat = false, sortcat = ARC9.WEAPON_FRAG },
-    { class = "weapon_crowbar",  name = "Crowbar",      targetcat = false, sortcat = ARC9.WEAPON_MELEE },
-    { class = "weapon_stunstick",  name = "Stunstick",  targetcat = false, sortcat = ARC9.WEAPON_MELEE },
-    { class = "weapon_slam",     name = "S.L.A.M.",     targetcat = false, sortcat = ARC9.WEAPON_FRAG },
-    { class = "weapon_bugbait",  name = "Bugbait",      targetcat = false, sortcat = ARC9.WEAPON_MISC },
+    { class = "weapon_frag",     name = "#weapon_frag",     targetcat = false, sortcat = ARC9.WEAPON_FRAG },
+    { class = "weapon_crowbar",  name = "#weapon_crowbar",  targetcat = false, sortcat = ARC9.WEAPON_MELEE },
+    { class = "weapon_stunstick",name = "#weapon_stunstick",targetcat = false, sortcat = ARC9.WEAPON_MELEE },
+    { class = "weapon_slam",     name = "#weapon_slam",     targetcat = false, sortcat = ARC9.WEAPON_FRAG },
+    { class = "weapon_bugbait",  name = "#weapon_bugbait",  targetcat = false, sortcat = ARC9.WEAPON_MISC },
 }
 
 local CategoryNames = {
-    [ARC9.WEAPON_PISTOL or 1]  = "Pistol",
-    [ARC9.WEAPON_SMG or 2]     = "SMG",
-    [ARC9.WEAPON_AR or 3]      = "Assault Rifle",
-    [ARC9.WEAPON_SHOTGUN or 4] = "Shotgun",
-    [ARC9.WEAPON_SNIPER or 5]  = "Sniper",
-    [ARC9.WEAPON_RPG or 6]     = "Explosive",
-    [ARC9.WEAPON_FRAG or 6]     = "Grenade",
-    [ARC9.WEAPON_MELEE or 7]   = "Melee",
-    [ARC9.WEAPON_MISC or 8]    = "Misc"
+    [ARC9.WEAPON_PISTOL or 1]  = ARC9:GetPhrase("blacklist.npc.pistol") or "pistol",
+    [ARC9.WEAPON_SMG or 2]     = ARC9:GetPhrase("blacklist.npc.smg") or "smg",
+    [ARC9.WEAPON_AR or 3]      = ARC9:GetPhrase("blacklist.npc.ar") or "ar",
+    [ARC9.WEAPON_SHOTGUN or 4] = ARC9:GetPhrase("blacklist.npc.shotgun") or "shotgun",
+    [ARC9.WEAPON_SNIPER or 5]  = ARC9:GetPhrase("blacklist.npc.sniper") or "sniper",
+    [ARC9.WEAPON_RPG or 6]     = ARC9:GetPhrase("blacklist.npc.rpg") or "rpg",
+    [ARC9.WEAPON_FRAG or 6]    = ARC9:GetPhrase("blacklist.npc.frag") or "frag",
+    [ARC9.WEAPON_MELEE or 7]   = ARC9:GetPhrase("blacklist.npc.melee") or "melee",
+    [ARC9.WEAPON_MISC or 8]    = ARC9:GetPhrase("blacklist.npc.misc") or "misc",
 }
 
 local function GetGuessCatName(swepTbl)
@@ -143,7 +143,7 @@ local function CreateWeaponButton(parent, wepClass, swepTbl, itemWidth, targetca
         srf.SetTextColor(hovered and color_black or color_guessed)
         srf.SetFont("ARC9_10")
         srf.SetTextPos(ARC9ScreenScale(28), ARC9ScreenScale(14))
-        srf.DrawText(guessedCatName .. (spaa.notForNPCs and " (NPC can't use)" or ""))
+        srf.DrawText(guessedCatName .. (spaa.notForNPCs and (ARC9:GetPhrase("blacklist.npc.notfornpc") or " no npc") or ""))
     end
 
     wepBtn.OnMousePressed = function(spaa, kc)

@@ -89,6 +89,12 @@ local function CreateWeaponButton(parent, wepClass, swepTbl, itemWidth, targetca
     local guessedCatName, guessedGunType = GetGuessCatName(swepTbl)
     local isGuessedMatch = guessedGunType == targetcat
 
+    local matPath = swepTbl.IconOverride or ("entities/" .. (swepTbl.ClassName or "ahmad") .. ".png")
+    local iconMat = Material(matPath, "mips smooth")
+    if iconMat:IsError() then
+        iconMat = Material("arc9/ahmad.png", "mips smooth")
+    end
+
     wepBtn.Paint = function(spaa, w, h)
         local selectedHL2guntbl = blacklistTbl[selectedHL2gun] or {}
         local override = selectedHL2guntbl[wepClass]
@@ -107,9 +113,8 @@ local function CreateWeaponButton(parent, wepClass, swepTbl, itemWidth, targetca
         srf.SetDrawColor(Bbg_col)
         srf.DrawRect(0, 0, w, h)
 
-        srf.SetMaterial( Material(swepTbl.IconOverride and swepTbl.IconOverride or "entities/" .. (swepTbl.ClassName or "ahmad") .. ".png") ) -- horrid but fine for menu displayed super rare
-        
         local iconSize = ARC9ScreenScale(22)
+        srf.SetMaterial(iconMat)
         srf.SetDrawColor(Bfg_col)
         srf.DrawTexturedRect(ARC9ScreenScale(2), ARC9ScreenScale(2), iconSize, iconSize)
 
@@ -283,6 +288,7 @@ function ARC9_NPCBlacklistMenu()
     wepList.Paint = function(span, w, h) end
 
     local sbar = wepList:GetVBar()
+    sbar:SetWide(ARC9ScreenScale(15))
     sbar.Paint = function() end
     sbar.btnUp.Paint = function(span, w, h) end
     sbar.btnDown.Paint = function(span, w, h) end

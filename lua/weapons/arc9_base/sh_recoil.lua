@@ -86,6 +86,7 @@ function SWEP:ApplyRecoil()
     recoilside = recoilside + randomrecoilside
 
     local pvrec = swepGetProcessedValue(self, "Recoil")
+    if !pvrec or !isnumber(pvrec) then return end
 
     recoilup = recoilup * (pvrec or 0)
     recoilside = recoilside * (pvrec or 0)

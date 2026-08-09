@@ -219,7 +219,7 @@ function ARC9_NPCBlacklistMenu()
     blacklistTbl = table.Copy(ARC9.NPCBlacklist)
 
     blacklistWindow = vgui.Create("DFrame", bg)
-    blacklistWindow:SetSize(ScrW() * 0.60, ScrH() * 0.9)
+    blacklistWindow:SetSize(ScrW() * 0.40 + ARC9ScreenScale(200), ScrH() * 0.9)
     blacklistWindow:Center()
     blacklistWindow:SetTitle("")
     blacklistWindow:SetDraggable(false)
@@ -324,7 +324,7 @@ function ARC9_NPCBlacklistMenu()
         wepGrid:Clear()
         blacklistTbl[selectedHL2gun] = blacklistTbl[selectedHL2gun] or {}
 
-        local availibwidth = (ScrW() * 0.60) - ARC9ScreenScale(130) - ARC9ScreenScale(50)
+        local availibwidth = (ScrW() * 0.40) - ARC9ScreenScale(130) - ARC9ScreenScale(50) + ARC9ScreenScale(200)
         local itemWidth = math.floor((availibwidth - ARC9ScreenScale(8)) / 3)
 
         local targetcat = ARC9.WEAPON_PISTOL

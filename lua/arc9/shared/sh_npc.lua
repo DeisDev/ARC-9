@@ -1,5 +1,5 @@
 hook.Add("InitPostEntity", "ARC9_NPCRegister", function()
-    for _, wpn in pairs(weapons.GetList()) do
+    for _, wpn in ipairs(weapons.GetList()) do
         local tbl = weapons.Get(wpn.ClassName)
 
         if !tbl.ARC9 then continue end
@@ -72,24 +72,51 @@ function ARC9.GuessWeaponType(swep)
     return ARC9.WEAPON_MISC
 end
 
-function ARC9.GetWeaponListForHL2Gun(hl2class, weptype)
-    local wepclasses = {}
-    
-    for _, swep in ipairs(weapons.GetList()) do
-        local class = swep.ClassName
-        if !weapons.IsBasedOn(class, "arc9_base") then continue end
-        if !ARC9.WeaponIsAllowed(class) then continue end
-        swep = weapons.Get(class)
-        if swep.NotForNPCs or swep.NotAWeapon or !swep.Spawnable or swep.AdminOnly then continue end
+ARC9.SpawnableWeapons = ARC9.SpawnableWeapons or {}
+ARC9.WeaponClasses = ARC9.WeaponClasses or {}
+ARC9.CachedHL2WepReplacements = ARC9.CachedHL2WepReplacements or {}
 
-        local guess = ARC9.GuessWeaponType(swep) == weptype
-        local override = ARC9.NPCBlacklist[hl2class] and ARC9.NPCBlacklist[hl2class][class]
+function ARC9.GetWeaponListForHL2Gun(hl2class, weptype)
+    ARC9.CachedHL2WepReplacements[hl2class] = ARC9.CachedHL2WepReplacements[hl2class] or {}
+    
+    if ARC9.CachedHL2WepReplacements[hl2class][weptype] then
+        return ARC9.CachedHL2WepReplacements[hl2class][weptype]
+    end
+
+    local wepclasses = {}
+    local overrides = ARC9.NPCBlacklist and ARC9.NPCBlacklist[hl2class] or {}
+    
+    for class, wtype in pairs(ARC9.SpawnableWeapons) do
+        local override = overrides[class]
         
-        local allowed = guess or override == "in"
+        local allowed = (wtype == weptype) or (override == "in")
         if override == "ex" then allowed = false end
         
         if allowed then table.insert(wepclasses, class) end
     end
     
+    ARC9.CachedHL2WepReplacements[hl2class][weptype] = wepclasses
     return wepclasses
 end
+
+function ARC9.PopulateWeaponClasses()
+    ARC9.SpawnableWeapons = {}
+    ARC9.WeaponClasses = {}
+    ARC9.CachedHL2WepReplacements = {}
+
+    for _, swep in ipairs(weapons.GetList()) do
+        local class = swep.ClassName
+        if !weapons.IsBasedOn(class, "arc9_base") then continue end
+        swep = weapons.Get(class)
+        if swep.NotForNPCs or swep.NotAWeapon or !swep.Spawnable or swep.AdminOnly then continue end
+        
+        local weptype = ARC9.GuessWeaponType(swep)
+        
+        ARC9.SpawnableWeapons[class] = weptype
+        ARC9.WeaponClasses[weptype] = ARC9.WeaponClasses[weptype] or {}
+        table.insert(ARC9.WeaponClasses[weptype], class)
+    end
+end
+
+ARC9.PopulateWeaponClasses()
+hook.Add("InitPostEntity", "ARC9_PopulateWeaponClasses", ARC9.PopulateWeaponClasses)

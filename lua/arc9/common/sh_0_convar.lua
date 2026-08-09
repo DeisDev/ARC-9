@@ -276,14 +276,6 @@ local conVars = {
         default = "0"
     },
     {
-        name = "npc_blacklist",
-        default = ""
-    },
-    {
-        name = "npc_whitelist",
-        default = ""
-    },
-    {
         name = "npc_give_weapons",
         default = "0"
     },

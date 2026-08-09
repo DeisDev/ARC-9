@@ -1,22 +1,3 @@
-ARC9.WeaponClasses = {}
-
-function ARC9.PopulateWeaponClasses()
-    for _, wep in ipairs(weapons.GetList()) do
-        if weapons.IsBasedOn(wep.ClassName, "arc9_base") then
-            wep = weapons.Get(wep.ClassName)
-            if wep.NotForNPCs then continue end
-            if wep.AdminOnly then continue end
-            local weptype = ARC9.GuessWeaponType(wep)
-            ARC9.WeaponClasses[weptype] = ARC9.WeaponClasses[weptype] or {}
-            table.insert(ARC9.WeaponClasses[weptype], wep.ClassName)
-        end
-    end
-end
-
-ARC9.PopulateWeaponClasses()
-
-hook.Add("InitPostEntity", "ARC9_PopulateWeaponClasses", ARC9.PopulateWeaponClasses)
-
 local arc9_npc_autoreplace = GetConVar("arc9_npc_autoreplace")
 local arc9_replace_spawned = GetConVar("arc9_replace_spawned")
 
@@ -27,39 +8,33 @@ function ARC9.ReplaceSpawnedWeapon(ent)
 
     -- print("tried to replcae", ent, CurTime())
 
-    local fuckingtimer = (CurTime() < 5 and -0.1 or 0)
+    -- local fuckingtimer = (CurTime() < 5 and -0.1 or 0)
+    local fuckingtimer = (CurTime() < 5) and 0 or 0.1
 
     if ent:IsNPC() then
         if !arc9_npc_autoreplace:GetBool() then return end
-        timer.Simple(0.1 + fuckingtimer, function()
+        timer.Simple(fuckingtimer, function()
             if !ent:IsValid() then return end
             local cap = ent:CapabilitiesGet()
 
             if bit.band(cap, CAP_USE_WEAPONS) != CAP_USE_WEAPONS then return end
 
-            local class
-
-            if IsValid(ent:GetActiveWeapon()) then
-                class = ent:GetActiveWeapon():GetClass()
-            end
-
+            local hiswep = ent:GetActiveWeapon()
+            local class = IsValid(hiswep) and hiswep:GetClass()
             if !class then return end
             local weptbl = ARC9.HL2Replacements[class]
             if !weptbl then return end
-            local wepcategory = table.Random(weptbl)
+            local wepcategory = weptbl[math.random(#weptbl)]
 
             local avib = ARC9.GetWeaponListForHL2Gun(class, wepcategory)
-            if avib then
-                local wepclass = table.Random(avib)
-
-                if wepclass then
-                    ent:Give(wepclass)
-                end
+            
+            if avib and #avib > 0 then
+                ent:Give(avib[math.random(#avib)])
             end
         end)
     elseif ent:IsWeapon() then
         if !arc9_replace_spawned:GetBool() then return end
-        timer.Simple(0.1 + fuckingtimer, function()
+        timer.Simple(fuckingtimer, function()
             if !ent:IsValid() then return end
             if IsValid(ent:GetOwner()) then return end
             if ent.ARC9 then return end
@@ -67,28 +42,25 @@ function ARC9.ReplaceSpawnedWeapon(ent)
             local class = ent:GetClass()
             local weptbl = ARC9.HL2Replacements[class]
             if !weptbl then return end
-            local wepcategory = table.Random(weptbl)
+            local wepcategory = weptbl[math.random(#weptbl)]
 
             local avib = ARC9.GetWeaponListForHL2Gun(class, wepcategory)
             
-            if avib then
-                local wepclass = table.Random(avib)
+            if avib and #avib > 0 then
+                local wepclass = avib[math.random(#avib)]
 
-                if wepclass then
-                    local wpnent = ents.Create(wepclass)
-                    wpnent:SetPos(ent:GetPos())
-                    wpnent:SetAngles(ent:GetAngles())
+                local wpnent = ents.Create(wepclass)
+                if !wpnent:IsValid() then return end
 
-                    -- wpnent:NoOwner_Initialize()
+                wpnent:SetPos(ent:GetPos())
+                wpnent:SetAngles(ent:GetAngles())
+                wpnent:Spawn()
 
-                    wpnent:Spawn()
-
-                    timer.Simple(0, function()
-                        if !ent:IsValid() then return end
-                        wpnent:OnDrop(true)
-                        ent:Remove()
-                    end)
-                end
+                timer.Simple(0, function()
+                    if !ent:IsValid() then return end
+                    wpnent:OnDrop(true)
+                    ent:Remove()
+                end)
             end
         end)
     end
@@ -96,59 +68,9 @@ end
 
 hook.Add("OnEntityCreated", "ARC9_ReplaceSpawnedWeapons", ARC9.ReplaceSpawnedWeapon)
 
-local arc9_npc_blacklist = GetConVar("arc9_npc_blacklist")
-local arc9_npc_whitelist = GetConVar("arc9_npc_whitelist")
-
-function ARC9.WeaponIsAllowed(class)
-    local blacklist = arc9_npc_blacklist:GetString()
-    local whitelist = arc9_npc_whitelist:GetString()
-
-    if whitelist == "" then
-        -- Check blacklist
-
-        local blacklist_tbl = {}
-
-        for _, v in ipairs(string.Explode(" ", blacklist)) do
-            blacklist_tbl[v] = true
-        end
-
-        if blacklist_tbl[class] then
-            return false
-        end
-
-        return true
-    else
-        -- Check whitelist
-
-        local whitelist_tbl = {}
-
-        for _, v in ipairs(string.Explode(" ", whitelist)) do
-            whitelist_tbl[v] = true
-        end
-
-        if whitelist_tbl[class] then
-            return true
-        end
-
-        return false
-    end
-end
-
 function ARC9.GetWeaponClasses(weptype)
-    local weptbl = ARC9.WeaponClasses[weptype]
-    local wepclasses = {}
-
-    if weptbl then
-        for _, class in ipairs(weptbl) do
-            if ARC9.WeaponIsAllowed(class) then
-                table.insert(wepclasses, class)
-            end
-        end
-    end
-
-    return wepclasses
+    return ARC9.WeaponClasses[weptype] or {}
 end
-
 
 util.AddNetworkString("arc9_sendnpcblacklist")
 util.AddNetworkString("arc9_syncnpcblacklist")
@@ -170,6 +92,7 @@ net.Receive("arc9_sendnpcblacklist", function(len, ply)
 
     if decomp and #decomp > 0 then
         ARC9.NPCBlacklist = util.JSONToTable(decomp) or {}
+        ARC9.CachedHL2WepReplacements = {} 
 
         file.Write(filenamee, util.TableToJSON(ARC9.NPCBlacklist, true))
 

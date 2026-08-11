@@ -261,7 +261,6 @@ function SWEP:Holster(wep)
             if self:HasAnimation(holster_animation) then
                 local holster_mult = fastdraw and !has_quickholster and .75 or 1
                 local t, minprogress = self:PlayAnimation(holster_animation, self:GetProcessedValue("DeployTime", true, 1) * holster_mult, true, true)
-                print(minprogress)
                 self:SetHolsterTime(CurTime() + t * minprogress)
             else
                 self:SetHolsterTime(CurTime() + (self:GetProcessedValue("DeployTime", true, 1)))

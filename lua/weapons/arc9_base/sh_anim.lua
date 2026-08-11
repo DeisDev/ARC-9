@@ -1,5 +1,4 @@
-function SWEP:PlayAnimation(anim, mult, lock, no_idle, noproxy, notranslate, Ahhh)
-function SWEP:PlayAnimation(anim, mult, lock, delayidle, noproxy, notranslate, noidle)
+function SWEP:PlayAnimation(anim, mult, lock, no_idle, noproxy, notranslate)
     mult = mult or 1
     lock = lock or false
     local untranslatedanim = anim

@@ -349,7 +349,8 @@ function SWEP:DevStuffAnims()
 
         if et then -- we will clear and just add a plus button if no eventtable
             for k, v in ipairs(et) do
-                makekf(v.t, v.s, v.p or 1, v.v or 1)
+                if not v.s then continue end
+                makekf(v.t, tostring(v.s), v.p or 1, v.v or 1)
             end
         end
 

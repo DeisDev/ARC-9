@@ -252,18 +252,17 @@ function SWEP:Holster(wep)
         self:SetHolster_Entity(wep)
         if self.QuickSwapTo and wep.SetDoAFastDraw then wep:SetDoAFastDraw(true) end
         if wep.QuickSwapTo then self:SetDoAFastDraw(true) end
-        local fdraw = self:GetDoAFastDraw()
-        local specialholsterlogic = self:RunHook( "Hook_SpecialHolsterLogic" )
+        
+        local fastdraw = self:GetDoAFastDraw()
+        local specialholsterlogic = self:RunHook("Hook_SpecialHolsterLogic")
         if !specialholsterlogic then
-            local hasqh = self:HasAnimation("holster_quick")
-            local selectholsteranimation = self:RunHook( "Hook_SelectHolsterAnimation" ) or (wep.QuickSwapTo and hasqh and "holster_quick") or "holster"
-            if self:HasAnimation(selectholsteranimation) then
-                local unsatmult = (fdraw and ((hasqh and 1) or (!hasqh and 0.5)) or 1)
-                local animation = self:PlayAnimation(selectholsteranimation, self:GetProcessedValue("DeployTime", true, 1) * unsatmult, true, false) or 0
-                local aentry = self:GetAnimationEntry(self:TranslateAnimation(selectholsteranimation))
-                local alength = aentry.MinProgress or animation
-                alength = alength * (aentry.Mult or 1)
-                self:SetHolsterTime(CurTime() + alength * unsatmult)
+            local has_quickholster = self:HasAnimation("holster_quick")
+            local holster_animation = self:RunHook("Hook_SelectHolsterAnimation") or (wep.QuickSwapTo and has_quickholster and "holster_quick") or "holster"
+            if self:HasAnimation(holster_animation) then
+                local holster_mult = fastdraw and !has_quickholster and 5 or 1
+                local t, minprogress = self:PlayAnimation(holster_animation, self:GetProcessedValue("DeployTime", true, 1) * holster_mult, true, true)
+                print(minprogress)
+                self:SetHolsterTime(CurTime() + t * minprogress)
             else
                 self:SetHolsterTime(CurTime() + (self:GetProcessedValue("DeployTime", true, 1)))
             end
@@ -323,11 +322,10 @@ function SWEP:DoDeployAnimation()
         self:SetReady(true)
     else
         if self:GetDoAFastDraw() then
-            if self:HasAnimation("draw_quick") then
-                self:PlayAnimation("draw_quick", self:GetProcessedValue("DeployTime", true, 1), true)
-            else
-                self:PlayAnimation("draw", self:GetProcessedValue("DeployTime", true, 1) * 0.65, true, true) -- + delayedidle
-            end
+            local has_fastdraw = self:HasAnimation("draw_quick")
+            local draw_anim = has_fastdraw and "draw_quick" or "draw"
+            local draw_mult = has_fastdraw and 1 or 5
+            self:PlayAnimation(draw_anim, self:GetProcessedValue("DeployTime", true, 1) * draw_mult, true)
         else
             self:PlayAnimation("draw", self:GetProcessedValue("DeployTime", true, 1), true)
         end

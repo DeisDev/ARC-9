@@ -1,3 +1,4 @@
+function SWEP:PlayAnimation(anim, mult, lock, no_idle, noproxy, notranslate, Ahhh)
 function SWEP:PlayAnimation(anim, mult, lock, delayidle, noproxy, notranslate, noidle)
     mult = mult or 1
     lock = lock or false
@@ -57,7 +58,7 @@ function SWEP:PlayAnimation(anim, mult, lock, delayidle, noproxy, notranslate, n
             if seq == -1 then return 0, 1 end
 
             if animation.AlsoPlayBase then
-                self:PlayAnimation(anim, mult, lock, delayidle, true)
+                self:PlayAnimation(anim, mult, lock, no_idle, true)
             end
 
         end
@@ -70,7 +71,7 @@ function SWEP:PlayAnimation(anim, mult, lock, delayidle, noproxy, notranslate, n
     end
 
     local time = 0.1
-    local minprogress = 1
+    local minprogress = animation.MinProgress or 1
 
     if IsValid(mdl) then
         time = animation.Time or mdl:SequenceDuration(seq)
@@ -117,15 +118,13 @@ function SWEP:PlayAnimation(anim, mult, lock, delayidle, noproxy, notranslate, n
         end
 
         if animation.DumpAmmo then
-            self:SetTimer((animation.MinProgress or 0.5) * mult, function()
+            self:SetTimer(minprogress * mult, function()
                 if SERVER then
                     self:Unload(self:GetValue("Ammo"))
                 end
             end)
         end
 
-        minprogress = animation.MinProgress or 0.8
-        minprogress = math.min(minprogress, 1)
 
         if animation.RestoreAmmo then
             self:SetTimer(time * mult * minprogress, function()
@@ -150,20 +149,16 @@ function SWEP:PlayAnimation(anim, mult, lock, delayidle, noproxy, notranslate, n
     self:SetHideBoneIndex(animation.HideBoneIndex or 0)
 
     if lock then
-        local minprogress2 = minprogress
-        if !animation.FireASAP then minprogress2 = 1 end
-        if isnumber(animation.FireASAP) then minprogress2 = animation.FireASAP end
-        
-        self:SetAnimLockTime(CurTime() + (time * mult * minprogress2))
+        local short = isnumber(animation.FireASAP) and animation.FireASAP or minprogress
+        self:SetAnimLockTime(CurTime() + (time * mult * short))
     else
-        self:SetAnimLockTime(CurTime() - 0.01) -- a crutch cuz float->double update broke something
+        self:SetAnimLockTime(0)
     end
 
-    if !noidle and !animation.NoIdle then
-        time = math.max(0.6, time)
-        self:SetNextIdle(CurTime() + ((animation.DelayedIdle or (delayidle and !animation.InstantIdle)) and 0.325 or 0) + (time * mult))
+    if no_idle or animation.NoIdle or untranslatedanim == "idle" then
+        self:SetNextIdle(0)
     else
-        self:SetNextIdle(math.huge)
+        self:SetNextIdle(CurTime() + time * mult)
     end
 
     if animation.PoseParamChanges then

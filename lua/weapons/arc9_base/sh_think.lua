@@ -60,10 +60,6 @@ function SWEP:Think()
     local swepDt = self.dt
     local now = CurTime()
 
-    if swepDt.NextIdle < now then
-        swepIdle(self)
-    end
-
     local shouldRunPredicted = not self:PredictionFilter()
 
     if not self.NotAWeapon then
@@ -152,9 +148,9 @@ function SWEP:Think()
         -- Will remove these comments later
 
         if shouldRunPredicted then
+            swepThinkReload(self)
             swepThinkCycle(self)
             swepThinkHeat(self)
-            swepThinkReload(self)
             -- Done (no GetVM)
             swepThinkBipod(self)
             swepThinkSights(self)
@@ -167,6 +163,10 @@ function SWEP:Think()
         self:ThinkRecoil()
         self:ThinkHoldBreath()
         self:ThinkLockOn()
+    end
+
+    if swepDt.NextIdle != 0 and swepDt.NextIdle <= now then
+        swepIdle(self)
     end
 
     if shouldRunPredicted then

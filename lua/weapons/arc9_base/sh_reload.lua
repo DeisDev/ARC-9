@@ -80,6 +80,7 @@ function SWEP:Reload()
     end
 
     local anim = "reload"
+    local dont_idle = false
 
     if getUBGL then
         anim = "reload_ubgl"
@@ -87,6 +88,7 @@ function SWEP:Reload()
 
     if self:GetShouldShotgunReload() then
         anim = "reload_start"
+        dont_idle = true
 
         if getUBGL then
             anim = "reload_ubgl_start"
@@ -112,22 +114,20 @@ function SWEP:Reload()
 
     local reloadtimemult = self:GetProcessedValue("ReloadTime")
 
-    local t = self:PlayAnimation(anim, reloadtimemult, true)
+    local entry = self:GetAnimationEntry(self:TranslateAnimation(anim))
+    local t = self:PlayAnimation(anim, reloadtimemult, true, dont_idle)
 
     if !self:GetShouldShotgunReload() then
-		local animation = self:GetAnimationEntry(self:TranslateAnimation(anim))
+        local minprogress = entry.RefillProgress or entry.MinProgress or 1
 
-        local minprogress = animation.RefillProgress or animation.MinProgress or 1
-        minprogress = math.min(minprogress, 0.95)
-
-        if !self:GetAnimationEntry(self:TranslateAnimation(anim)).RestoreAmmo then
+        if !entry.RestoreAmmo then
             self:SetReloadTimer( CurTime() + (t * minprogress), math.Round(self:GetValue(getUBGL and "UBGLClipSize" or "ClipSize")) )
         end
 
-        local newcliptime = self:GetAnimationEntry(self:TranslateAnimation(anim)).MagSwapTime or 0.5
+        local newcliptime = entry.MagSwapTime or 0.5
 
         if !getUBGL then
-            if !self:GetAnimationEntry(self:TranslateAnimation(anim)).NoMagSwap then
+            if !entry.NoMagSwap then
                 self:SetTimer(reloadtimemult * newcliptime, function()
                     local ammo1 = self:Ammo1()
 
@@ -163,14 +163,7 @@ function SWEP:Reload()
     self:SetNeedTriggerPress(false) -- Allows you to keep spraying with Auto-Reload
     self:SetBurstCount(0)
 
-    -- self:SetTimer(t * 0.9, function()
-    --     if !IsValid(self) then return end
-
-    --     self:SetEndReload(false)
-    --     self:EndReload()
-    -- end)
-
-    self:SetReloadFinishTime(CurTime() + (t * 0.95))
+    self:SetReloadFinishTime(CurTime() + t)
 
     self:RunHook("Hook_PostReload")
 end
@@ -466,9 +459,11 @@ function SWEP:EndReload()
 
             end_clipsize = end_clipsize + attempt_to_restore
 
-            local t, minprogress = self:PlayAnimation(anim, self:GetProcessedValue("ReloadTime", nil, 1), true, true)
-
-            local magswaptime = (self:GetAnimationEntry(anim) or {}).MagSwapTime or 0
+            local reloadtime = self:GetProcessedValue("ReloadTime", nil, 1)
+            local entry = self:GetAnimationEntry(anim)
+            local t, minprogress = self:PlayAnimation(anim, reloadtime, true, true)
+            minprogress = entry and entry.RefillProgress or minprogress
+            local magswaptime = entry and entry.MagSwapTime or 0
 
             if !self.NoForceSetLoadedRoundsOnReload then -- sorry
                 self:SetTimer(magswaptime * t, function()

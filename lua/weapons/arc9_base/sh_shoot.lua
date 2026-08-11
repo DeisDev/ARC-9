@@ -431,7 +431,7 @@ function SWEP:DoPrimaryAttack()
             end
         end
 
-        self:PlayAnimation(banim, 1, false, true)
+        self:PlayAnimation(banim, 1, false)
     end
 
     local clip1 = self:Clip1()

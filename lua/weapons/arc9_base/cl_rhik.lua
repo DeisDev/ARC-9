@@ -426,6 +426,9 @@ function SWEP:GunControllerRHIK(pos, ang)
             rap_pos:Sub(pos)
             rap_ang:Sub(ang)
 
+            self.IKGunMotionPos = rap_pos
+            self.IKGunMotionAng = rap_ang
+
             pos:Add(rap_pos)
             ang:Add(rap_ang)
         end

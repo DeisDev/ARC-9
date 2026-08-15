@@ -986,6 +986,11 @@ local function SetTPIKOffset(self, wm, owner, lp)
             pos:Sub(self.TPIKSmoothRecoilPos)
             ang:Add(Angle(-self.TPIKSmoothRecoilAng.x, self.TPIKSmoothRecoilAng.y, self.TPIKSmoothRecoilAng.z))
         end
+
+        if self:GetSequenceProxy() != 0 and self.IKGunMotionPos then
+            pos = pos - self.IKGunMotionPos
+            ang = ang + self.IKGunMotionAng
+        end
     end
 
     wm.slottbl.Pos = pos

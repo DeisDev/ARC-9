@@ -409,12 +409,12 @@ hook.Add("PopulateWeapons", "zzz_ARC9_SubCategories", function(pnlContent, tree,
             node.DoPopulate = function(self)
 
                 -- If we've already populated it - forget it.
-                -- if (self.PropPanel) then return end
+                -- if (self.PropPanelArk9) then return end
 
                 -- Create the container panel
-                self.PropPanel = vgui.Create("ContentContainer", pnlContent)
-                self.PropPanel:SetVisible(false)
-                self.PropPanel:SetTriggerSpawnlistChange(false)
+                self.PropPanelArk9 = vgui.Create("ContentContainer", pnlContent)
+                self.PropPanelArk9:SetVisible(false)
+                self.PropPanelArk9:SetTriggerSpawnlistChange(false)
 
                 -- Iterate through the subcategories
                 for subcatName, subcatWeps in SortedPairs(catSubcats) do
@@ -442,12 +442,12 @@ hook.Add("PopulateWeapons", "zzz_ARC9_SubCategories", function(pnlContent, tree,
                                 surface.DrawTexturedRect( 0, 0, self:GetContentSize(), h )
                             end
                         end
-                        self.PropPanel:Add(label)
+                        self.PropPanelArk9:Add(label)
                     end
 
                     -- Create the clickable icon
                     for _, ent in SortedPairsByMemberValue(subcatWeps, "PrintName") do
-                        local newpanel = spawnmenu.CreateContentIcon(ent.ScriptedEntityType or "weapon", self.PropPanel, {
+                        local newpanel = spawnmenu.CreateContentIcon(ent.ScriptedEntityType or "weapon", self.PropPanelArk9, {
                             nicename  = ent.PrintName or ent.ClassName,
                             spawnname = ent.ClassName,
                             material  = ent.IconOverride or "entities/" .. ent.ClassName .. ".png",
@@ -469,7 +469,7 @@ hook.Add("PopulateWeapons", "zzz_ARC9_SubCategories", function(pnlContent, tree,
             -- If we click on the node populate it and switch to it.
             node.DoClick = function(self)
                 self:DoPopulate()
-                pnlContent:SwitchPanel(self.PropPanel)
+                pnlContent:SwitchPanel(self.PropPanelArk9)
             end
         end
 

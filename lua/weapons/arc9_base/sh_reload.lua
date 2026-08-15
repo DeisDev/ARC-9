@@ -499,6 +499,7 @@ function SWEP:ThinkReload()
         self:RestoreClip( self:GetReloadAmount() )
         self:SetReloadTime( 0 )
         self:SetReloadAmount( 0 )
+        self:SetReloading(false)
     end
     if self:GetReloading() and self:GetReloadFinishTime() <= CurTime() then
         self:EndReload()

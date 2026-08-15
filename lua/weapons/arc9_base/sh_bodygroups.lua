@@ -133,7 +133,7 @@ function SWEP:DoBodygroups(wm, cm)
 
     if CLIENT and not isnpc then
         for pp, ppv in pairs(self:GetReloadPoseParameterTable(wm)) do
-            if !pp then continue end
+            if !pp or !isnumber(ppv) then continue end
             mdl:SetPoseParameter(pp, ppv)
         end
     end

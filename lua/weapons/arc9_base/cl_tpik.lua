@@ -1261,7 +1261,7 @@ function SWEP:DoTPIK(isdepth)
             self.TPIKSequenceCache = seqCache
         end
 
-        if self:GetSequenceProxy() != 0 then seq = seqCache.idle end                    -- lhik ubgls fix
+        if self:GetSequenceProxy() != 0 then seq = seqCache.idle time = 0 end                    -- lhik ubgls fix
 
         if self.TPIKNoSprintAnim and self:GetIsSprinting() then seq = seqCache.idle end -- no sprint anim in tpik (less ugly)
         if (htype == "normal" or htype == "passive") and (seq == seqCache.draw or seq == seqCache.holster) then

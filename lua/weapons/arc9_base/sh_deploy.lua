@@ -314,7 +314,7 @@ function SWEP:DoDeployAnimation()
         owner.ARC9LastSelectedGrenade = self:GetClass()
     end
 
-    if !arc9_never_ready:GetBool() and (arc9_dev_always_ready:GetBool() or !self:GetReady()) and self:HasAnimation("ready") then
+    if !arc9_never_ready:GetBool() and ((arc9_dev_always_ready:GetBool() and self:Clip1() > 0) or !self:GetReady()) and self:HasAnimation("ready") then
         local t, min = self:PlayAnimation("ready", self:GetProcessedValue("DeployTime", true, 1), true)
 
         self:SetReadyTime(CurTime() + (t * min))

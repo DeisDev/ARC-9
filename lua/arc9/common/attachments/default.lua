@@ -307,7 +307,9 @@ ATT.IKAnimationAlsoPlayBase = false -- Also play the base animation
 
 ATT.IKGunMotionQCA = nil -- Make the gun move while in IK animation
 
-ATT.IKGunMotionMult = 1
+ATT.IKGunMotionMultReal = 1
+ATT.IKGunMotionAngleMultReal = 1
+ATT.IKGunMotionAnchor = Vector(0, 0, 0)
 
 ATT.IKCameraMotionQCA = nil
 ATT.IKCameraMotionQCA_Mult = nil

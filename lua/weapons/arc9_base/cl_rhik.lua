@@ -404,9 +404,25 @@ function SWEP:GunControllerRHIK(pos, ang)
         end
 
         if anchor and bonp then
-            anchor = ( bonp + ( (bona:Forward() * anchor.x) + (bona:Right() * anchor.y) + (bona:Up() * anchor.z) ) )
+            local offsx, offsy, offsz = anchor.x, anchor.y, anchor.z
+            if atttbl.IKGunMotionAnchor then
+                offsx = offsx + atttbl.IKGunMotionAnchor.x
+                offsy = offsy + atttbl.IKGunMotionAnchor.y
+                offsz = offsz + atttbl.IKGunMotionAnchor.z
+            end
+
+            anchor = ( bonp + ( (bona:Forward() * offsx) + (bona:Right() * offsy) + (bona:Up() * offsz) ) )
+
+            if atttbl.IKGunMotionMultReal then
+                attpos:Mul(atttbl.IKGunMotionMultReal)
+            end
+
+            if atttbl.IKGunMotionAngleMultReal then
+                attang:Mul(atttbl.IKGunMotionAngleMultReal)
+            end
 
             local rap_pos, rap_ang = self:RotateAroundPoint2(pos, ang, anchor, attpos, attang)
+
             rap_pos:Sub(pos)
             rap_ang:Sub(ang)
 

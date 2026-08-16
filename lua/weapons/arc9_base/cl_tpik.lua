@@ -892,10 +892,11 @@ local function SetTPIKOffset(self, wm, owner, lp)
         end
 
         if self.WorldModelOffset.TPIKPosReloadOffset then
-            local fuckingreloadprocessinfluence = self:GetReloadingProgress()
-            if fuckingreloadprocessinfluence > 0 then
-                pos:Add(self.WorldModelOffset.TPIKPosReloadOffset * fuckingreloadprocessinfluence)
-                ang:Add(self.WorldModelOffset.TPIKAngReloadOffset * fuckingreloadprocessinfluence)
+            self.TPIKReloadProgressSmooth = Lerp(FrameTime() * 2, self.TPIKReloadProgressSmooth or 0, self:GetReloading() and 1 or 0)
+
+            if self.TPIKReloadProgressSmooth > 0.1 then
+                pos:Add(self.WorldModelOffset.TPIKPosReloadOffset * self.TPIKReloadProgressSmooth)
+                ang:Add(self.WorldModelOffset.TPIKAngReloadOffset * self.TPIKReloadProgressSmooth)
             end
         end
     end
@@ -1325,11 +1326,12 @@ function SWEP:DoTPIK(isdepth)
     -- end
 
     local sightdelta = self:GetSightAmount()
-    -- local reloadprogress = math.max(0, self:GetReloadingProgress() - sightdelta)
-    self.TPIKReloadProgressSmooth = Lerp(FrameTime() * 10, self.TPIKReloadProgressSmooth or 0,
-        self:GetReloading() and 1 - sightdelta or 0)
 
-    if sightdelta > 0 or self.TPIKReloadProgressSmooth > 0.12 then
+    if !self.WorldModelOffset.TPIKPosReloadOffset then
+        self.TPIKReloadProgressSmooth = Lerp(FrameTime() * 2, self.TPIKReloadProgressSmooth or 0, self:GetReloading() and 1 - sightdelta or 0)
+    end
+
+    if sightdelta > 0 or (self.TPIKReloadProgressSmooth or 0) > 0.12 then
         local ply_boneindex = GetCachedBoneIndex(ply, "ValveBiped.Bip01_Head1")
         if ply_boneindex then
             if GetCachedHeadChildCount(ply, ply_boneindex) < 2 then -- dont move if more than 1 child bone on head
@@ -1337,7 +1339,7 @@ function SWEP:DoTPIK(isdepth)
                 if ply_bonematrix then
                     local boneang = ply_bonematrix:GetAngles()
 
-                    boneang:Add(Angle(5, -15, 15) * sightdelta + Angle(9, -5, -2) * self.TPIKReloadProgressSmooth)
+                    boneang:Add(Angle(5, -15, 15) * sightdelta + Angle(9, -5, -2) * (self.TPIKReloadProgressSmooth or 0))
 
                     ply_bonematrix:SetAngles(boneang)
 

@@ -120,7 +120,7 @@ function SWEP:ApplyRecoil()
     -- owner:SetViewPunchAngles(Angle(vis_kick_v, vis_kick_h, vis_shake))
 
     if recoilshake:GetBool() then
-        owner:SetFOV(owner:GetFOV() * 0.99, 0)
+        owner:SetFOV(owner:GetFOV() * (1 - 0.01 * (self:GetProcessedValue("RecoilKickRoll", true) or 1)), 0)
         owner:SetFOV(0, 60 / (swepGetProcessedValue(self, "RPM")))
     end
 end

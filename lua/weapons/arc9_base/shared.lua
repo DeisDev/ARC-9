@@ -558,6 +558,7 @@ SWEP.VisualRecoilDoingFunc = nil -- wawa, override Up, Side, Roll here
 
 SWEP.RecoilKick = 1 -- Camera recoil
 SWEP.RecoilKickDamping = 70.151 -- Camera recoil damping
+SWEP.RecoilKickRoll = 1 -- Camera Roll Mult
 SWEP.RecoilKickAffectPitch = nil -- thing for eft, set to true if you want camera go up (only visually) as recoil increases, SWEP.Recoil * SWEP.RecoilKick = effect of this
 SWEP.RecoilKickPitchMult = 1 -- If recoil kick affects pitch, how much will the effect of the RecoilKick stat apply to the pitch
 

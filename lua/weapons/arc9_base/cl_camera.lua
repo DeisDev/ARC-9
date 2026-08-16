@@ -25,7 +25,7 @@ function SWEP:CalcView(ply, pos, ang, fov)
     rec = rec * 3 * reckick
 
     if rec > 0 and recoilshake:GetBool() then
-        ang.r = ang.r + (math.sin(CurTime() * self:GetProcessedValue("RecoilKickDamping", true) * reckick) * rec)
+        ang.r = ang.r + (math.sin(CurTime() * self:GetProcessedValue("RecoilKickDamping", true)) * rec) * (self:GetProcessedValue("RecoilKickRoll", true) or 1)
     end
 
     if self.RecoilKickAffectPitch then

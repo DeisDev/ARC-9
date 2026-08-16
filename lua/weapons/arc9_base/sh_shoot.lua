@@ -654,9 +654,10 @@ function SWEP:DoProjectileAttack(pos, ang, spread)
         local numm = swepGetProcessedValue(self, "Num")
         if numm > 0 then
             local owner = self:GetOwner()
+            local ownernpc = IsValid(owner) and owner:IsNPC() -- no physbullets for npcs they dont deserve that
 
             local alwayphys = swepGetProcessedValue(self, "AlwaysPhysBullet", true)
-            local shouldphys = (alwayphys or bulletPhysics:GetBool()) and !(self:IsNPC() or swepGetProcessedValue(self, "NeverPhysBullet", true) or (numm > 2 and !bulletPhysicsshotguns:GetBool()))
+            local shouldphys = (alwayphys or (bulletPhysics:GetBool() and !ownernpc)) and !(swepGetProcessedValue(self, "NeverPhysBullet", true) or (numm > 2 and !bulletPhysicsshotguns:GetBool()))
 
             if alwayphys then
                 self:ShootPhysBulletBinding(pos, ang, spread, bullettbl, numm)

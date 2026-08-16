@@ -29,7 +29,9 @@ function SWEP:Penetrate(tr, range, penleft, alreadypenned)
     if !arc9_mod_penetration:GetBool() then return end
 
     if !IsValid(self) then return end
-    if !IsValid(self:GetOwner()) then return end
+    local owner = self:GetOwner()
+    if !IsValid(owner) then return end
+    if owner:IsNPC() then return end -- no pen for npcs! they dont deserve wasting performance on that
 
     if self.Penned > self.MaxPenetrationLayers then return end
 

@@ -225,7 +225,7 @@ do
 
         vpa = vpa + (vpv * ft) + (vpc * ft * ft * 0.5)
         local vpdrag = -(vpv * vpv:Length() * 0.5)
-        local vpreturn = (-vpa * vpa:Length() * springconstant) + (-vpa / vpa:Length() * springmagnitude) + (-vpv * springdamping)
+        local vpreturn = (-vpa * vpa:Length() * springconstant) + (-vpa / math.max(0.0001, vpa:Length()) * springmagnitude) + (-vpv * springdamping)
         local new_vpc = vpdrag + vpreturn
         vpv = vpv + ((vpc + new_vpc) * (ft * 0.5))
 
@@ -245,7 +245,7 @@ do
 
         vaa = vaa + (vav * ft) + (vac * ft * ft * 0.5)
         local vdrag = -(vav * vav:Length() * 0.5)
-        local vreturn = (-vaa * vaa:Length() * springconstant) + (-vaa / vaa:Length() * springmagnitude) + (-vav * springdamping)
+        local vreturn = (-vaa * vaa:Length() * springconstant) + (-vaa / math.max(0.0001, vaa:Length()) * springmagnitude) + (-vav * springdamping)
         local new_vac = vdrag + vreturn
         vav = vav + ((vac + new_vac) * (ft * 0.5))
 
@@ -286,7 +286,7 @@ do
     
             vpa2 = vpa2 + (vpv2 * ft) + (vpc2 * ft * ft * 0.5)
             local vpdrag2 = -(vpv2 * vpv2:Length() * 0.5)
-            local vpreturn2 = (-vpa2 * vpa2:Length() * springconstant2) + (-vpa2 / vpa2:Length() * springmagnitude2) + (-vpv2 * springdamping2)
+            local vpreturn2 = (-vpa2 * vpa2:Length() * springconstant2) + (-vpa2 / math.max(0.0001, vpa2:Length()) * springmagnitude2) + (-vpv2 * springdamping2)
             local new_vpc2 = vpdrag2 + vpreturn2
             vpv2 = vpv2 + ((vpc2 + new_vpc2) * (ft * 0.5))
     
@@ -308,7 +308,7 @@ do
 
             vaa2 = vaa2 + (vav2 * ft) + (vac2 * ft * ft * 0.5)
             local vdrag2 = -(vav2 * vav2:Length() * 0.5)
-            local vreturn2 = (-vaa2 * vaa2:Length() * springconstant2) + (-vaa2 / vaa2:Length() * springmagnitude2) + (-vav2 * springdamping2)
+            local vreturn2 = (-vaa2 * vaa2:Length() * springconstant2) + (-vaa2 / math.max(0.0001, vaa2:Length()) * springmagnitude2) + (-vav2 * springdamping2)
             local new_vac2 = vdrag2 + vreturn2
             vav2 = vav2 + ((vac2 + new_vac2) * (ft * 0.5))
             
@@ -418,6 +418,7 @@ function SWEP:DoVisualRecoil()
 
     if isSingleplayer or (!isSingleplayer and (SERVER or (CLIENT and IsFirstTimePredicted()))) then
         local mult = swepGetProcessedValue(self, "VisualRecoil")
+        if mult < 0.005 then return end
 
         local up = swepGetProcessedValue(self, "VisualRecoilUp") * mult
 

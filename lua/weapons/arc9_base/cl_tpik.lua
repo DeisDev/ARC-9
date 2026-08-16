@@ -1002,7 +1002,6 @@ function SWEP:ShouldTPIK()
     local owner = self:GetOwner()
     local lp = LocalPlayer()
 
-    if render.GetDXLevel() < 90 then return end
     if ! owner:IsPlayer() then return end
     if owner:IsPlayingTaunt() then return end
     if owner:InVehicle() and ! owner:GetAllowWeaponsInVehicle() then return end

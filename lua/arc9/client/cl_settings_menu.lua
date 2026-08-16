@@ -257,6 +257,7 @@ ARC9.SettingsTable = {
         { type = "bool", text = "settings.gameplay.dtap_sights.title", desc = "settings.gameplay.dtap_sights.desc", convar = "dtap_sights" },
         { type = "bool", text = "settings.gameplay.autoreload.title", desc = "settings.gameplay.autoreload.desc", convar = "autoreload" },
         { sv = true, type = "bool", text = "settings.server.gameplay.recoilshake.title", desc = "settings.server.gameplay.recoilshake.desc", convar = "recoilshake" },
+        { sv = true, type = "bool", text = "settings.server.gameplay.recoilcamshake.title", desc = "settings.server.gameplay.recoilcamshake.desc", convar = "recoilcamshake" },
 
         { type = "label", text = "settings.tabname.features", desc = "settings.tabname.features.desc" },
         { sv = true, type = "bool", text = "settings.server.gameplay.mod_sway.title", desc = "settings.server.gameplay.mod_sway.desc", convar = "mod_sway" },

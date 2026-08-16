@@ -826,6 +826,9 @@ L["settings.gameplay.autoreload.desc"] = "Automatically reloads your weapon when
 L["settings.server.gameplay.recoilshake.title"] = "Enable Recoil FOV Shake"
 L["settings.server.gameplay.recoilshake.desc"] = "Snaps the field of view when shooting."
 
+L["settings.server.gameplay.recoilcamshake.title"] = "Enable Recoil Camera Shake"
+L["settings.server.gameplay.recoilcamshake.desc"] = "Shakes camera roll angle when shooting."
+
 ////////// Functionality
 L["settings.tabname.features"] = "Features"
 L["settings.tabname.features.desc"] = "Adjust settings related to various ARC9 features."

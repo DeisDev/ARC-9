@@ -7,6 +7,7 @@ local arc9_vm_cambobwalk = GetConVar("arc9_vm_cambobwalk")
 local arc9_vm_cambobintensity = GetConVar("arc9_vm_cambobintensity")
 local arc9_vm_camrollstrength = GetConVar("arc9_vm_camrollstrength")
 local arc9_vm_camstrength = GetConVar("arc9_vm_camstrength")
+local recoilshake = GetConVar("arc9_recoilcamshake")
 
 local SmoothRecoilAmount = 0
 
@@ -23,8 +24,8 @@ function SWEP:CalcView(ply, pos, ang, fov)
     local reckick = self:GetProcessedValue("RecoilKick")
     rec = rec * 3 * reckick
 
-    if rec > 0 then
-        ang.r = ang.r + (math.sin(CurTime() * self:GetProcessedValue("RecoilKickDamping", true)) * rec)
+    if rec > 0 and recoilshake:GetBool() then
+        ang.r = ang.r + (math.sin(CurTime() * self:GetProcessedValue("RecoilKickDamping", true) * reckick) * rec)
     end
 
     if self.RecoilKickAffectPitch then

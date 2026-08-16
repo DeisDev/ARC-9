@@ -812,6 +812,10 @@ local conVars = {
         default = "1",
     },
     {
+        name = "recoilcamshake",
+        default = "1",
+    },
+    {
         name = "equipment_generate_ammo",
         default = "1",
         replicated = true

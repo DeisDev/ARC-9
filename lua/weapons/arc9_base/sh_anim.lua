@@ -149,6 +149,11 @@ function SWEP:PlayAnimation(anim, mult, lock, no_idle, noproxy, notranslate)
 
     if lock then
         local short = isnumber(animation.FireASAP) and animation.FireASAP or minprogress
+        -- This fixes shotgun reloads with MinProgress allowing you to shoot or do other things
+        -- in the middle of a reload.
+        if untranslatedanim == "reload_start" or untranslatedanim == "reload_insert" then
+            short = 1
+        end
         self:SetAnimLockTime(CurTime() + (time * mult * short))
     else
         self:SetAnimLockTime(0)

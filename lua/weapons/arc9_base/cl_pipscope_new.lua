@@ -186,6 +186,8 @@ function SWEP:ShouldDoScope()
 end
 
 local mat_optic_surface = Material("effects/arc9/rt")
+mat_optic_surface:SetTexture("$basetexture", "vgui/black")
+
 local mat_cheap = Material("effects/arc9/rt_cheap")
 local mat_cheap_sharpen = Material("effects/arc9/rt_cheap_sharpen")
 

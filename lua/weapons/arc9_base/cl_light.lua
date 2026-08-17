@@ -199,6 +199,9 @@ function SWEP:DrawFlashlightsVM()
     local eyepos = owner:EyePos()
 
     local anydrawn = false
+    
+    render.SetStencilEnable(false) -- no flashlights in stencil
+
     for i, k in ipairs(self.Flashlights) do
         local model = (k.slottbl or {}).VModel
 

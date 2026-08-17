@@ -11,7 +11,7 @@ function SWEP:DoHolosight(mdl, atttbl)
     if owner != LocalPlayer() or owner.ARC9NoScopes then return end
     self.RenderingHolosight = true 
     
-    local ref = (atttbl.ID or 56 ) % 128
+    local ref = (atttbl.ID or 56) % 63
 
     -- render.ClearDepth()
 
@@ -27,7 +27,7 @@ function SWEP:DoHolosight(mdl, atttbl)
 
     render.SetBlend(0)
 
-    render.SetStencilReferenceValue(ref)
+    render.SetStencilReferenceValue(bit.bor(ref, 64))
 
     -- render.OverrideDepthEnable(true, true)
     mdl:DrawModel()
@@ -145,6 +145,8 @@ function SWEP:DoHolosight(mdl, atttbl)
 
     render.DepthRange(0, 1)
 
+    render.SetStencilWriteMask(255)
+    render.SetStencilTestMask(255)
     render.SetStencilEnable(false)
 
     -- mdl:DrawModel()

@@ -153,6 +153,8 @@ function SWEP:PreDrawViewModel(vm, weapon, ply, flags)
     	    shouldrtblur = true
     	end
 
+        render.SetStencilEnable(false)
+
     	if custdelta > 0 then
     	    if arc9_cust_blur:GetBool() then
     	        blurtarget = 5 * custdelta
@@ -178,6 +180,8 @@ function SWEP:PreDrawViewModel(vm, weapon, ply, flags)
     	if ((shouldrtblur and blurenable) or (custdelta > 0 and blurtarget > 0)) then
         	DrawCheapBlur(bluramt, self)
     	end
+
+        render.SetStencilEnable(true)
 
     	bluramt = math.Approach(bluramt, blurtarget, FrameTime() * 10)
 
@@ -338,6 +342,8 @@ function SWEP:ViewModelDrawn(ent, flags)
         end
     end
 
+    render.SetStencilEnable(false)
+
     if !inrt then self.ActiveEffects = newfx end
 end
 
@@ -470,7 +476,7 @@ function SWEP:RenderDoFMask(clear)
             -- render.Clear(0, 0, 0, 255)
             local oldtune = render.GetToneMappingScaleLinear()
             render.SetToneMappingScaleLinear(tune_nohdr) -- Turns off hdr
-            render.ClearDepth()
+            render.ClearDepth(false)
             -- local sa = self:GetSightAmount()
             -- sa = sa * sa
             local sa = 1

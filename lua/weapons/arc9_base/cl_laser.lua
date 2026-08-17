@@ -20,6 +20,8 @@ function SWEP:DrawLaser(pos, dir, atttbl, behav)
     local strength = atttbl.LaserStrength or 1
     local flaremat = atttbl.LaserFlareMat or defaultflaremat
     local lasermat = atttbl.LaserTraceMat or defaulttracemat
+    
+    render.SetStencilEnable(false) -- no flashlights in laser beams
 
     local width = math.Rand(0.1, 0.5) * strength
 

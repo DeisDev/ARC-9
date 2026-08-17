@@ -18,6 +18,15 @@ hook.Add("PreDrawViewModels", "ARC9_PreDrawViewModels", function()
     local wpn = LocalPlayer():GetActiveWeapon()
 
     if !wpn.ARC9 then return end
+    
+    render.SetStencilEnable( true )
+    render.SetStencilWriteMask(64) 
+    render.SetStencilTestMask(64)
+    render.SetStencilReferenceValue(68)
+    render.SetStencilCompareFunction(STENCIL_ALWAYS)
+    render.SetStencilPassOperation(STENCIL_REPLACE)
+    render.SetStencilFailOperation(STENCIL_KEEP)
+    render.SetStencilZFailOperation(STENCIL_KEEP)
 
     if !wpn:IsCheapScope() then return end
 

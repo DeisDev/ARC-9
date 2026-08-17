@@ -233,7 +233,7 @@ function SWEP:CreateAttachmentModel(wm, atttbl, slottbl, ignorescale, cm, dupli,
     end
     
     if atttbl.RTScopeSubmatIndex then
-        csmodel:SetSubMaterial(atttbl.RTScopeSubmatIndex, wm and "vgui/black" or "effects/arc9/rt")
+        csmodel:SetSubMaterial(atttbl.RTScopeSubmatIndex + 1, wm and "vgui/black" or "effects/arc9/rt")
     end
 
     if !swepGetProcessedValue then swepGetProcessedValue = self.GetProcessedValue end

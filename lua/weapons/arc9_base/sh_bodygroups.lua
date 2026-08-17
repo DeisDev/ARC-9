@@ -162,8 +162,7 @@ function SWEP:GetHiddenBones(wm)
 
     if self:GetReloading() then
         if !self:GetProcessedValue("ShotgunReload", true) then
-            local timeLeft = self:GetReloadFinishTime() - CurTime()
-            if timeLeft > 0.1 and (1 - (timeLeft / (self.ReloadTime * self:GetAnimationTime("reload")))) > 0.1 then
+            if (self:GetReloadFinishTime() - CurTime()) > 0.1 then
                 hide = false
             end
         else

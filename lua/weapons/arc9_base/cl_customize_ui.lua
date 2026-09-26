@@ -1450,7 +1450,7 @@ function SWEP:CreateHUD_RHP()
 
     local topleft_settings = vgui.Create("ARC9TopButton", topleft_panel)
     topleft_settings:SetPos(ARC9ScreenScale(19), ARC9ScreenScale(19))
-    topleft_settings:SetNotif(ARC9.BadPerfromanceSettings())
+    topleft_settings:SetNotif(ARC9.BadMulticoreAnd32())
     topleft_settings.DoClick = function(self2)
         surface.PlaySound(popupsound)
         ARC9_OpenSettings()

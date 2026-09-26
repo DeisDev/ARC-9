@@ -36,7 +36,7 @@ ARC9.LanguagesTable = {
 
 ARC9.Is32 = function() return jit.arch != "x64" and jit.arch != "arm64"  end
 ARC9.BadMulticore = function() return GetConVar("mat_queue_mode"):GetInt() == 0 or GetConVar("cl_threaded_bone_setup"):GetInt() < 1 end
-ARC9.BadMulticoreAnd32 = function() return ARC9.win32() or ARC9.BadMulticore() end
+ARC9.BadMulticoreAnd32 = function() return ARC9.Is32() or ARC9.BadMulticore() end
 
 local afterscalefunc = function(self2, self3, settingspanel)
     if IsValid(LocalPlayer()) then -- uncust the gun

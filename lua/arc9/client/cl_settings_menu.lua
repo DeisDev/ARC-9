@@ -34,8 +34,9 @@ ARC9.LanguagesTable = {
 {"9UwU :3", "uwu"},
 }
 
-ARC9.BadPerfromanceSettings = function() return BRANCH != "x86-64" end
-ARC9.BadPerfromanceSettingsAlt = function() return BRANCH != "x86-64" or GetConVar("mat_queue_mode"):GetInt() == 0 or GetConVar("cl_threaded_bone_setup"):GetInt() < 1 end
+ARC9.Is32 = function() return jit.arch != "x64" and jit.arch != "arm64"  end
+ARC9.BadMulticore = function() return GetConVar("mat_queue_mode"):GetInt() == 0 or GetConVar("cl_threaded_bone_setup"):GetInt() < 1 end
+ARC9.BadMulticoreAnd32 = function() return ARC9.Is32() or ARC9.BadMulticore() end
 
 local afterscalefunc = function(self2, self3, settingspanel)
     if IsValid(LocalPlayer()) then -- uncust the gun
@@ -76,12 +77,12 @@ end
 ARC9.SettingsTable = {
     {
         TabName = "settings.tabname.quick",
-        Warning = ARC9.BadPerfromanceSettingsAlt,
-        { type = "label", text = "badconf.warning", desc = "badconf.warning.desc", important = true, showfunc = ARC9.BadPerfromanceSettingsAlt },
-        { type = "label", text = "badconf.x64.title", desc = "badconf.x64.desc", showfunc = function() return BRANCH != "x86-64" end },
-        { type = "label", text = "badconf.multicore.title", desc = "badconf.multicore.desc", showfunc = function() return GetConVar("mat_queue_mode"):GetInt() == 0 or GetConVar("cl_threaded_bone_setup"):GetInt() < 1 end },
-        { type = "label", text = "", showfunc = ARC9.BadPerfromanceSettingsAlt },
-        { type = "label", text = "", showfunc = ARC9.BadPerfromanceSettingsAlt },
+        Warning = ARC9.BadMulticoreAnd32,
+        { type = "label", text = "badconf.warning", desc = "badconf.warning.desc", important = true, showfunc = ARC9.BadMulticoreAnd32 },
+        { type = "label", text = "badconf.x64.title", desc = "badconf.x64.desc", showfunc = ARC9.Is32 },
+        { type = "label", text = "badconf.multicore.title", desc = "badconf.multicore.desc", showfunc = ARC9.BadMulticore },
+        { type = "label", text = "", showfunc = ARC9.BadMulticoreAnd32 },
+        { type = "label", text = "", showfunc = ARC9.BadMulticoreAnd32 },
 
         { type = "label", text = "settings.tabname.general", desc = "settings.tabname.quick.desc" },
 
